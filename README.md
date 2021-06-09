@@ -1,0 +1,2 @@
+# BinarizedSNPS
+Binarize the SNPS
