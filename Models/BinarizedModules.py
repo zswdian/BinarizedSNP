@@ -1,6 +1,6 @@
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
+# import torch.nn.functional as F
 
 
 class BinActiv(torch.autograd.Function):
@@ -35,6 +35,8 @@ class BinConv2d(nn.Module):
             self.dropout = nn.Dropout(dropout)
         self.conv = nn.Conv2d(input_channels, output_channels, kernel_size=self.kernel_size,
                               stride=self.stride, padding=self.padding)
+        self.avg = nn.AvgPool2d(kernel_size=self.kernel_size, stride=self.stride,
+                                padding=self.padding)
         self.relu = nn.ReLU(inplace=True)
 
     def forward(self, input):
@@ -47,10 +49,11 @@ class BinConv2d(nn.Module):
             .div(n).squeeze(dim=1)
         self.conv.weight.data.sign_()
         x = self.conv(x)
-        # beta = F.conv2d(mean, (torch.ones(1, 1, self.kernel_size, self.kernel_size)/
-        #                 (self.kernel_size*self.kernel_size)).cuda(), padding=self.padding)
-        beta = F.conv2d(mean, torch.ones(1, 1, self.kernel_size, self.kernel_size)/
-                          (self.kernel_size*self.kernel_size), padding=self.padding)
+        beta = self.avg(mean)
+        # beta = F.conv2d(mean, (torch.ones(1, 1, self.kernel_size, self.kernel_size)
+        #                 .div(self.kernel_size*self.kernel_size)).cuda(), padding=self.padding)
+        # beta = F.conv2d(mean, torch.ones(1, 1, self.kernel_size, self.kernel_size)
+        #                 .div(self.kernel_size*self.kernel_size), padding=self.padding)
 
         x = x.mul(beta).mul(alpha.expand_as(x))
         x = self.relu(x)
