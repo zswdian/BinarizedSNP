@@ -18,10 +18,6 @@ def save_state(model, best_acc):
         'best_acc': best_acc,
         'state_dict': model.state_dict(),
     }
-    for key in list(state['state_dict'].keys()):
-        if 'module' in key:
-            state['state_dict'][key.replace('module.', '')] = \
-                state['state_dict'].pop(key)
     torch.save(state, 'Models/net_binary.pth.tar')
 
 
@@ -51,6 +47,7 @@ def train(epoch):
         bin_op.updateBinaryWeightGrad()
 
         optimizer.step()
+
         if batch_idx % 100 == 0:
             print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}\tLR: {}'.format(
                 epoch, batch_idx * len(data), len(trainloader.dataset),
