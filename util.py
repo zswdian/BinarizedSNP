@@ -64,7 +64,7 @@ class BinOp():
 
     def updateBinaryWeightGrad(self):
         for index in range(self.num_params):
-            weight = self.saved_params[index]
+            weight = self.target_modules[index].data
             n = weight[0].nelement()
             s = weight.size()
             m = weight.norm(1, dim=[1, 2, 3], keepdim=True).div(n).expand(s)

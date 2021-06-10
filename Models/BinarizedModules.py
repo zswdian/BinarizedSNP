@@ -44,10 +44,10 @@ class BinConv2d(nn.Module):
         x, mean = BinActiv()(x)
         if self.dropout_ratio != 0:
             x = self.dropout(x)
-        n = self.conv.weight.data[0].nelement()
-        alpha = self.conv.weight.data.norm(1, dim=[1, 2, 3], keepdim=True) \
-            .div(n).squeeze(dim=1)
-        self.conv.weight.data.sign_()
+        # n = self.conv.weight.data[0].nelement()
+        # alpha = self.conv.weight.data.norm(1, dim=[1, 2, 3], keepdim=True) \
+        #     .div(n).squeeze(dim=1)
+        # self.conv.weight.data.sign_()
         x = self.conv(x)
         beta = self.avg(mean)
         # beta = F.conv2d(mean, (torch.ones(1, 1, self.kernel_size, self.kernel_size)
@@ -55,6 +55,6 @@ class BinConv2d(nn.Module):
         # beta = F.conv2d(mean, torch.ones(1, 1, self.kernel_size, self.kernel_size)
         #                 .div(self.kernel_size*self.kernel_size), padding=self.padding)
 
-        x = x.mul(beta).mul(alpha.expand_as(x))
+        x = x.mul(beta)
         x = self.relu(x)
         return x
