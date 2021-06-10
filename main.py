@@ -22,7 +22,7 @@ def save_state(model, best_acc):
 
 
 def train(epoch):
-    # load the weights
+    # load the model
     if epoch is not epoch_start:
         pretrained_model = torch.load('Models/net_binary.pth.tar')
         model.load_state_dict(pretrained_model['state_dict'])
@@ -157,6 +157,10 @@ if __name__ == '__main__':
         print('==> Load pretrained model form', args.pretrained, '...')
         pretrained_model = torch.load('Models/net_binary.pth.tar')
         best_acc = pretrained_model['best_acc']
+        for key in list(pretrained_model['state_dict'].keys()):
+            if 'module' in key:
+                pretrained_model['state_dict'][key.replace('module.', '')] = \
+                    pretrained_model['state_dict'].pop(key)
         model.load_state_dict(pretrained_model['state_dict'])
 
     model.cuda()
