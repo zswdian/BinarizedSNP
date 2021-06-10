@@ -1,6 +1,5 @@
 import torch
 import torch.nn as nn
-# import torch.nn.functional as F
 
 
 class BinActiv(torch.autograd.Function):
@@ -44,17 +43,8 @@ class BinConv2d(nn.Module):
         x, mean = BinActiv()(x)
         if self.dropout_ratio != 0:
             x = self.dropout(x)
-        # n = self.conv.weight.data[0].nelement()
-        # alpha = self.conv.weight.data.norm(1, dim=[1, 2, 3], keepdim=True) \
-        #     .div(n).squeeze(dim=1)
-        # self.conv.weight.data.sign_()
         x = self.conv(x)
         beta = self.avg(mean)
-        # beta = F.conv2d(mean, (torch.ones(1, 1, self.kernel_size, self.kernel_size)
-        #                 .div(self.kernel_size*self.kernel_size)).cuda(), padding=self.padding)
-        # beta = F.conv2d(mean, torch.ones(1, 1, self.kernel_size, self.kernel_size)
-        #                 .div(self.kernel_size*self.kernel_size), padding=self.padding)
-
         x = x.mul(beta)
         x = self.relu(x)
         return x

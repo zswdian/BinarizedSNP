@@ -18,10 +18,6 @@ def save_state(model, best_acc):
         'best_acc': best_acc,
         'state_dict': model.state_dict(),
     }
-    for key in list(state['state_dict'].keys()):
-        if 'module' in key:
-            state['state_dict'][key.replace('module.', '')] = \
-                    state['state_dict'].pop(key)
     torch.save(state, 'Models/net_binary.pth.tar')
 
 
@@ -38,7 +34,7 @@ def train(epoch):
         bin_op.binarization()
 
         # forwarding
-        # data, target = Variable(data.cuda()), Variable(target.cuda())
+        data, target = Variable(data.cuda()), Variable(target.cuda())
         optimizer.zero_grad()
         output = model(data)
 
@@ -69,13 +65,13 @@ def test():
 
     with torch.no_grad():
         for data, target in testloader:
-            # data, target = Variable(data.cuda()), Variable(target.cuda())
+            data, target = Variable(data.cuda()), Variable(target.cuda())
 
             output = model(data)
             test_loss += criterion(output, target).data.item()
             predict = output.data.max(1, keepdim=True)[1]
-            # correct += predict.eq(target.data.view_as(predict)).cpu().sum()
-            correct += predict.eq(target.data.view_as(predict)).sum()
+            correct += predict.eq(target.data.view_as(predict)).cpu().sum()
+            # correct += predict.eq(target.data.view_as(predict)).sum()
 
     acc = 100. * correct / len(testloader.dataset)
 
@@ -136,8 +132,8 @@ if __name__ == '__main__':
     print('==> Options:', args)
 
     # set the seed
-    # torch.manual_seed(1)
-    # torch.cuda.manual_seed(1)
+    torch.manual_seed(1)
+    torch.cuda.manual_seed(1)
 
     # prepare the data
     trainloader = Data.trainloader
@@ -163,8 +159,8 @@ if __name__ == '__main__':
         best_acc = pretrained_model['best_acc']
         model.load_state_dict(pretrained_model['state_dict'])
 
-    # model.cuda()
-    # model = torch.nn.DataParallel(model, device_ids=range(torch.cuda.device_count()))
+    model.cuda()
+    model = torch.nn.DataParallel(model, device_ids=range(torch.cuda.device_count()))
 
     # define solver and criterion
     lr = float(args.lr)
