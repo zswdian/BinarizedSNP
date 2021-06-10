@@ -26,8 +26,14 @@ def save_state(model, best_acc):
 
 
 def train(epoch):
+    # load the weights
+    if epoch is not epoch_start:
+        pretrained_model = torch.load('Models/net_binary.pth.tar')
+        model.load_state_dict(pretrained_model['state_dict'])
+
     model.train()
     for batch_idx, (data, target) in enumerate(trainloader):
+
         # binarize the weights
         bin_op.binarization()
 
@@ -107,8 +113,9 @@ def draw():
     plt.plot(x2, y2, '.-')
     plt.xlabel('Test loss vs. epoches')
     plt.ylabel('Test loss')
-    plt.show()
     plt.savefig("accuracy_loss.jpg")
+    plt.show()
+    return
 
 
 if __name__ == '__main__':
@@ -151,7 +158,7 @@ if __name__ == '__main__':
                 m.bias.data.zero_()
     else:
         print('==> Load pretrained model form', args.pretrained, '...')
-        pretrained_model = torch.load(args.pretrained)
+        pretrained_model = torch.load('Models/net_binary.pth.tar')
         best_acc = pretrained_model['best_acc']
         model.load_state_dict(pretrained_model['state_dict'])
 
@@ -180,8 +187,8 @@ if __name__ == '__main__':
     test_loss_list = []
     test_acc_list = []
 
-    epoch_start = args.epoch_start
-    epoch_end = args.epoch_end
+    epoch_start = int(args.epoch_start)
+    epoch_end = int(args.epoch_end)
 
     # start training
     for epoch in range(epoch_start, epoch_end):
