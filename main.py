@@ -1,3 +1,7 @@
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -28,8 +32,8 @@ def save_state(model, best_acc):
 def train(epoch):
 
     model.train()
-    for batch_idx, (data, target) in enumerate(trainloader):
 
+    for batch_idx, (data, target) in enumerate(trainloader):
         # binarize the weights
         bin_op.binarization()
 
@@ -131,7 +135,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
     print('==> Options:', args)
 
-    # set the seed
+    # set the random seed
     torch.manual_seed(1)
     torch.cuda.manual_seed(1)
 
@@ -163,12 +167,12 @@ if __name__ == '__main__':
     model = torch.nn.DataParallel(model, device_ids=range(torch.cuda.device_count()))
 
     # define solver and criterion
-    lr = float(args.lr)
+    base_lr = float(args.lr)
     param_dict = dict(model.named_parameters())
     params = []
 
     for key, value in param_dict.items():
-        params += [{'params': [value], 'lr': lr, 'weight_decay': 0.00001}]
+        params += [{'params': [value], 'lr': base_lr, 'weight_decay': 0.00001}]
 
     optimizer = optim.Adam(params, lr=0.10, weight_decay=0.00001)
     criterion = nn.CrossEntropyLoss()

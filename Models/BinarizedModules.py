@@ -2,11 +2,11 @@ import torch
 import torch.nn as nn
 
 
-class BinActiv(torch.autograd.Function):
+class BinActive(torch.autograd.Function):
 
     def forward(self, input):
         self.save_for_backward(input)
-        mean = input.abs().mean(dim=1, keepdim=True)
+        mean = torch.mean(input.abs(), 1, keepdim=True)
         input = input.sign()
         return input, mean
 
@@ -39,7 +39,7 @@ class BinConv2d(nn.Module):
 
     def forward(self, input):
         x = self.bn(input)
-        x, mean = BinActiv()(x)
+        x, mean = BinActive()(x)
         if self.dropout_ratio != 0:
             x = self.dropout(x)
         x = self.conv(x)
