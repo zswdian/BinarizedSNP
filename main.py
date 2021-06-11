@@ -18,14 +18,14 @@ def save_state(model, best_acc):
         'best_acc': best_acc,
         'state_dict': model.state_dict(),
     }
+    for key in list(state['state_dict'].keys()):
+        if 'module' in key:
+            state['state_dict'][key.replace('module.', '')] = \
+                state['state_dict'].pop(key)
     torch.save(state, 'Models/net_binary.pth.tar')
 
 
 def train(epoch):
-    # load the model
-    if epoch is not epoch_start:
-        pretrained_model = torch.load('Models/net_binary.pth.tar')
-        model.load_state_dict(pretrained_model['state_dict'])
 
     model.train()
     for batch_idx, (data, target) in enumerate(trainloader):
@@ -85,7 +85,7 @@ def test():
     test_acc_list.append(acc)
 
     print('\nTest set: Average loss: {:.4f}, Accuracy: {}/{} ({:.2f}%)'.format(
-        test_loss, correct, len(testloader.dataset), acc))
+        test_loss * 128., correct, len(testloader.dataset), acc))
     print('Best Accuracy: {:.2f}%\n'.format(best_acc))
     return
 
@@ -157,10 +157,6 @@ if __name__ == '__main__':
         print('==> Load pretrained model form', args.pretrained, '...')
         pretrained_model = torch.load('Models/net_binary.pth.tar')
         best_acc = pretrained_model['best_acc']
-        for key in list(pretrained_model['state_dict'].keys()):
-            if 'module' in key:
-                pretrained_model['state_dict'][key.replace('module.', '')] = \
-                    pretrained_model['state_dict'].pop(key)
         model.load_state_dict(pretrained_model['state_dict'])
 
     model.cuda()
