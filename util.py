@@ -53,8 +53,8 @@ class BinOp():
         for index in range(self.num_params):
             n = self.target_modules[index].data[0].nelement()
             s = self.target_modules[index].data.size()
-            alpha = self.target_modules[index].data.norm(1, dim=[1, 2, 3], keepdim=True)\
-                .div(n).expand(s)
+            alpha = self.target_modules[index].data.norm(1, 3, keepdim=True)\
+                .sum(2, keepdim=True).sum(1, keepdim=True).div(n).expand(s)
             self.target_modules[index].data = self.target_modules[index].data.sign()\
                 .mul(alpha)
 
@@ -67,11 +67,13 @@ class BinOp():
             weight = self.target_modules[index].data
             n = weight[0].nelement()
             s = weight.size()
-            m = weight.norm(1, dim=[1, 2, 3], keepdim=True).div(n).expand(s)
+            m = weight.norm(1, 3, keepdim=True).sum(2, keepdim=True)\
+                .sum(1, keepdim=True).div(n).expand(s)
             m[weight.lt(-1.0)] = 0
             m[weight.gt(1.0)] = 0
             m = m.mul(weight).mul(self.target_modules[index].grad.data)
             m_add = weight.sign().mul(self.target_modules[index].grad.data)
-            m_add = m_add.sum(dim=[1, 2, 3], keepdim=True).div(n).expand(s)
+            m_add = m_add.sum(3, keepdim=True).sum(2, keepdim=True)\
+                .sum(1, keepdim=True).div(n).expand(s)
             m_add = m_add.mul(weight.sign())
             self.target_modules[index].grad.data = m.add(m_add).mul(1.0-1.0/s[1]).mul(n)
