@@ -71,7 +71,7 @@ class BinOp():
                 .sum(1, keepdim=True).div(n).expand(s)
             m[weight.lt(-1.0)] = 0
             m[weight.gt(1.0)] = 0
-            m = m.mul(weight).mul(self.target_modules[index].grad.data)
+            m = m.mul(self.target_modules[index].grad.data)
             m_add = weight.sign().mul(self.target_modules[index].grad.data)
             m_add = m_add.sum(3, keepdim=True).sum(2, keepdim=True)\
                 .sum(1, keepdim=True).div(n).expand(s)
