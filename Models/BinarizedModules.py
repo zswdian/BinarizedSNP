@@ -13,8 +13,8 @@ class BinActive(torch.autograd.Function):
     def backward(self, grad_output, grad_output_mean):
         input, = self.saved_tensors
         grad_input = grad_output.clone()
-        grad_input[input.le(1)] = 0
-        grad_input[input.ge(-1)] = 0
+        grad_input[input.le(-1)] = 0
+        grad_input[input.ge(1)] = 0
         return grad_input
 
 
