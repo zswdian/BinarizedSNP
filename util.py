@@ -14,7 +14,7 @@ class BinOp():
         start_range = 1
         end_range = count_conv2d - 2
         self.bin_range = numpy.linspace(start_range, end_range, end_range-start_range+1)\
-                    .astype('int').tolist()
+            .astype('int').tolist()
 
         self.num_params = len(self.bin_range)
         self.saved_params = []
@@ -54,9 +54,9 @@ class BinOp():
             n = self.target_modules[index].data[0].nelement()
             s = self.target_modules[index].data.size()
             alpha = self.target_modules[index].data.norm(1, 3, keepdim=True)\
-                .sum(2, keepdim=True).sum(1, keepdim=True).div(n).expand(s)
+                .sum(2, keepdim=True).sum(1, keepdim=True).div(n)
             self.target_modules[index].data = self.target_modules[index].data.sign()\
-                .mul(alpha)
+                .mul(alpha.expand(s))
 
     def restore(self):
         for index in range(self.num_params):

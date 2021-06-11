@@ -32,8 +32,8 @@ class BinConv2d(nn.Module):
         self.bn.weight.data = self.bn.weight.data.zero_().add(1.0)
         if dropout != 0:
             self.dropout = nn.Dropout(dropout)
-        self.conv = nn.Conv2d(input_channels, output_channels, kernel_size=self.kernel_size,
-                              stride=self.stride, padding=self.padding)
+        self.conv = nn.Conv2d(input_channels, output_channels, kernel_size=kernel_size,
+                              stride=stride, padding=padding)
         # self.avg = nn.AvgPool2d(kernel_size=self.kernel_size, stride=self.stride,
         #                         padding=self.padding)
         self.relu = nn.ReLU(inplace=True)

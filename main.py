@@ -170,7 +170,7 @@ if __name__ == '__main__':
     for key, value in param_dict.items():
         params += [{'params': [value], 'lr': lr, 'weight_decay': 0.00001}]
 
-    optimizer = optim.Adam(params, lr=0.1, weight_decay=0.00001)
+    optimizer = optim.Adam(params, lr=0.10, weight_decay=0.00001)
     criterion = nn.CrossEntropyLoss()
 
     # define the binarization operator
