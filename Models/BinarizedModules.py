@@ -38,12 +38,14 @@ class BinConv2d(nn.Module):
         self.relu = nn.ReLU(inplace=True)
 
     def forward(self, input):
-        x = self.bn(input)
+        x = self.relu(input)
+        # x = self.bn(input)
+        x = self.bn(x)
         x, mean = BinActive()(x)
         if self.dropout_ratio != 0:
             x = self.dropout(x)
         x = self.conv(x)
         beta = self.avg(mean)
         x = x.mul(beta)
-        x = self.relu(x)
+        # x = self.relu(x)
         return x
