@@ -40,7 +40,7 @@ class Net(nn.Module):
 
             BinConv2d(192, 192, kernel_size=3, stride=1, padding=1, dropout=0.5),
             BinConv2d(192, 192, kernel_size=1, stride=1, padding=0),
-            nn.BatchNorm2d(192, eps=1e-4, momentum=0.1, affine=False),
+            # nn.BatchNorm2d(192, eps=1e-4, momentum=0.1, affine=False),
             nn.ReLU(inplace=True),
             nn.Conv2d(192, 10, kernel_size=1, stride=1, padding=0),
 
