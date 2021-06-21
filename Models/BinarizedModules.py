@@ -34,12 +34,12 @@ class BinConv2d(nn.Module):
             self.dropout = nn.Dropout(dropout)
         self.conv = nn.Conv2d(input_channels, output_channels, kernel_size=kernel_size,
                               stride=stride, padding=padding)
-        self.avg = nn.AvgPool2d(kernel_size=kernel_size, stride=stride,padding=padding)
-        self.relu = nn.ReLU(inplace=True)
+        self.avg = nn.AvgPool2d(kernel_size=kernel_size, stride=stride, padding=padding)
+        self.pRelu = nn.PReLU(0.25)
 
     def forward(self, input):
         # x = self.bn(input)
-        x = self.relu(input)
+        x = self.pRelu(input)
         x, mean = BinActive()(x)
         if self.dropout_ratio != 0:
             x = self.dropout(x)
