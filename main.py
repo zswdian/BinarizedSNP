@@ -111,15 +111,15 @@ def adjust_learning_rate(optimizer, epoch):
 
 
 def draw(expt_no):
-    x1 = x2 = range(epoch_start, epoch_end, 10)
+    x1 = x2 = range(epoch_start, epoch_end)
     y1 = test_acc_list
     y2 = test_loss_list
     plt.subplot(2, 1, 1)
-    plt.plot(x1, y1, 'o-')
+    plt.plot(x1, y1, '-')
     plt.title('Test accuracy vs. epoches')
     plt.ylabel('Test accuracy')
     plt.subplot(2, 1, 2)
-    plt.plot(x2, y2, '.-')
+    plt.plot(x2, y2, '-.')
     plt.xlabel('Test loss vs. epoches')
     plt.ylabel('Test loss')
     plt.savefig("accuracy_loss"+str(expt_no)+'.jpg')
