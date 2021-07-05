@@ -17,6 +17,15 @@ import warnings
 warnings.filterwarnings('ignore')
 
 
+def weight_init(m):
+    if isinstance(m, nn.Conv2d):
+        n = m.kernel_size[0] * m.kernel_size[1] * m.out_channels
+        m.weight.data.normal_(0, np.sqrt(2./n))
+    elif isinstance(m, nn.BatchNorm2d):
+        m.weight.data.fill_(1)
+        m.bias.data.zero_()
+
+
 def save_state(model, best_acc):
     print('==> Saving model ...')
     state = {
@@ -223,7 +232,7 @@ if __name__ == '__main__':
             f.write('Expt {}: Best Accuracy: {:.2f}%\n'.format(i+1, best_acc))
         acc.append(best_acc)
         draw(i+1)
-        model.apply()
+        model.apply(weight_init)
 
     with open('data.txt', 'a') as f:
         f.write('Mean: {}\n'.format(np.mean(acc)))
