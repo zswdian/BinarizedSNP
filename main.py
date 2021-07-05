@@ -30,7 +30,7 @@ def save_state(model, best_acc):
     torch.save(state, 'Models/net_binary.pth.tar')
 
 
-def train(epoch):
+def train(epoch, expt_no):
 
     model.train()
 
@@ -56,8 +56,8 @@ def train(epoch):
         optimizer.step()
 
         if batch_idx % 100 == 0:
-            print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}\tLR: {}'.format(
-                epoch, batch_idx * len(data), len(trainloader.dataset),
+            print('Expt{}: Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}\tLR: {}'.format(
+                expt_no, epoch, batch_idx * len(data), len(trainloader.dataset),
                 100. * batch_idx / len(trainloader), loss.data.item(),
                 optimizer.param_groups[0]['lr']))
     return
@@ -112,15 +112,14 @@ def draw(expt_no):
     y1 = test_acc_list
     y2 = test_loss_list
     plt.subplot(2, 1, 1)
-    plt.plot(x1, y1, '-')
+    plt.plot(x1, y1, 'r--')
     plt.title('Test accuracy vs. epoches')
     plt.ylabel('Test accuracy')
     plt.subplot(2, 1, 2)
-    plt.plot(x2, y2, '-.')
+    plt.plot(x2, y2, 'g-', marker='*')
     plt.xlabel('Test loss vs. epoches')
     plt.ylabel('Test loss')
     plt.savefig("accuracy_loss"+str(expt_no)+'.jpg')
-    plt.show()
     return
 
 
@@ -216,15 +215,15 @@ if __name__ == '__main__':
     # start training
     for i in range(expt_num):
         best_acc = 0
-        print('Expt {}:'.format(i+1))
         for epoch in range(epoch_start, epoch_end):
             adjust_learning_rate(optimizer, epoch)
-            train(epoch)
+            train(epoch, i+1)
             test()
         with open('data.txt', 'a') as f:
             f.write('Expt {}: Best Accuracy: {:.2f}%\n'.format(i+1, best_acc))
         acc.append(best_acc)
         draw(i+1)
+        model.apply()
 
     with open('data.txt', 'a') as f:
         f.write('Mean: {}\n'.format(np.mean(acc)))
