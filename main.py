@@ -6,7 +6,7 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 import Data
-from Models import net_binary
+from Models import net_binary, net
 import util
 import argparse
 from torch.autograd import Variable
@@ -35,7 +35,8 @@ def train(epoch):
 
     for batch_idx, (data, target) in enumerate(trainloader):
         # binarize the weights
-        bin_op.binarization()
+        if not args.full:
+            bin_op.binarization()
 
         # forwarding
         data, target = Variable(data.cuda()), Variable(target.cuda())
@@ -47,8 +48,9 @@ def train(epoch):
         loss.backward()
 
         # restore the weights
-        bin_op.restore()
-        bin_op.updateBinaryWeightGrad()
+        if not args.full:
+            bin_op.restore()
+            bin_op.updateBinaryWeightGrad()
 
         optimizer.step()
 
@@ -65,7 +67,8 @@ def test():
     model.eval()
     test_loss = 0
     correct = 0
-    bin_op.binarization()
+    if not args.full:
+        bin_op.binarization()
 
     with torch.no_grad():
         for data, target in testloader:
@@ -103,7 +106,7 @@ def adjust_learning_rate(optimizer, epoch):
 
 
 def draw():
-    x1 = x2 = range(epoch_start, epoch_end)
+    x1 = x2 = range(epoch_start, epoch_end, 10)
     y1 = test_acc_list
     y2 = test_loss_list
     plt.subplot(2, 1, 1)
@@ -132,6 +135,8 @@ if __name__ == '__main__':
                         help='the start range of epoch')
     parser.add_argument('--epoch_end', action='store', default='320',
                         help='the end range of epoch')
+    parser.add_argument('--full', action='store', default=False,
+                        help='use full-precision')
     args = parser.parse_args()
     print('==> Options:', args)
 
@@ -147,7 +152,10 @@ if __name__ == '__main__':
     classes = Data.classes
 
     # define the model
-    model = net_binary.Net()
+    if not args.full:
+        model = net_binary.Net()
+    else:
+        model = net.Net()
 
     # initialize the model
     if not args.pretrained:
@@ -178,7 +186,8 @@ if __name__ == '__main__':
     criterion = nn.CrossEntropyLoss()
 
     # define the binarization operator
-    bin_op = util.BinOp(model)
+    if not args.full:
+        bin_op = util.BinOp(model)
 
     # do the evaluation if specified
     if args.evaluate:
