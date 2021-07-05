@@ -16,7 +16,8 @@ class Net(nn.Module):
             nn.MaxPool2d(kernel_size=3, stride=2, padding=1),
 
             nn.BatchNorm2d(96, eps=1e-4, momentum=0.1, affine=True),
-            nn.Conv2d(96, 192, kernel_size=5, stride=1, padding=2, dropout=0.5),
+            nn.Conv2d(96, 192, kernel_size=5, stride=1, padding=2),
+            nn.Dropout(0.5),
             nn.PReLU(),
             nn.BatchNorm2d(192, eps=1e-4, momentum=0.1, affine=True),
             nn.Conv2d(192, 192, kernel_size=1, stride=1, padding=0),
@@ -27,7 +28,8 @@ class Net(nn.Module):
             nn.AvgPool2d(kernel_size=3, stride=2, padding=1),
 
             nn.BatchNorm2d(192, eps=1e-4, momentum=0.1, affine=True),
-            nn.Conv2d(192, 192, kernel_size=3, stride=1, padding=1, dropout=0.5),
+            nn.Conv2d(192, 192, kernel_size=3, stride=1, padding=1),
+            nn.Dropout(0.5),
             nn.PReLU(),
             nn.BatchNorm2d(192, eps=1e-4, momentum=0.1, affine=True),
             nn.Conv2d(192, 192, kernel_size=1, stride=1, padding=0),
