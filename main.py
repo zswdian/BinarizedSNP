@@ -30,7 +30,7 @@ def save_state(model, best_acc):
     torch.save(state, 'Models/net_binary.pth.tar')
 
 
-def train(epoch, expt_no):
+def train(epoch):
 
     model.train()
 
@@ -55,8 +55,6 @@ def train(epoch, expt_no):
 
         optimizer.step()
 
-        print('Expt {}:'.format(expt_no))
-
         if batch_idx % 100 == 0:
             print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}\tLR: {}'.format(
                 epoch, batch_idx * len(data), len(trainloader.dataset),
@@ -65,7 +63,7 @@ def train(epoch, expt_no):
     return
 
 
-def test(expt_no):
+def test():
     global best_acc
     model.eval()
     test_loss = 0
@@ -94,8 +92,7 @@ def test(expt_no):
     test_loss_list.append(test_loss)
     test_acc_list.append(acc)
 
-    print('\nExpt {}:').format(expt_no)
-    print('Test set: Average loss: {:.4f}, Accuracy: {}/{} ({:.2f}%)'.format(
+    print('\nTest set: Average loss: {:.4f}, Accuracy: {}/{} ({:.2f}%)'.format(
         test_loss * 128., correct, len(testloader.dataset), acc))
     print('Best Accuracy: {:.2f}%\n'.format(best_acc))
 
@@ -218,14 +215,16 @@ if __name__ == '__main__':
     # start training
     for i in range(expt_num):
         best_acc = 0
+        print('Expt {}:'.format(i+1))
         for epoch in range(epoch_start, epoch_end):
             adjust_learning_rate(optimizer, epoch)
-            train(epoch, i+1)
-            test(i+1)
+            train(epoch)
+            test()
         with open('data.txt', 'a') as f:
             f.write('Expt {}: Best Accuracy: {:.2f}%\n'.format(i+1, best_acc))
         acc.append(best_acc)
         draw(i+1)
+
     with open('data.txt', 'a') as f:
         f.write('Mean: {}\n'.format(np.mean(acc)))
         f.write('Var: {}'.format(np.var(acc)))
