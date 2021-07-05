@@ -112,14 +112,14 @@ def draw(expt_no):
     y1 = test_acc_list
     y2 = test_loss_list
     plt.subplot(2, 1, 1)
-    plt.plot(x1, y1, 'r--')
-    plt.title('Test accuracy vs. epoches')
+    plt.plot(x1, y1, 'r-')
+    plt.title('Test accuracy vs. epoches' + str(expt_no))
     plt.ylabel('Test accuracy')
     plt.subplot(2, 1, 2)
     plt.plot(x2, y2, 'g-', marker='*')
     plt.xlabel('Test loss vs. epoches')
     plt.ylabel('Test loss')
-    plt.savefig("accuracy_loss"+str(expt_no)+'.jpg')
+    plt.savefig("accuracy_loss" + str(expt_no) + '.jpg')
     return
 
 
