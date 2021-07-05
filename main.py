@@ -6,11 +6,12 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 import Data
-from Models import net_binary, net
+from Models import net_binary, net, snps, snps_binary
 import util
 import argparse
 from torch.autograd import Variable
 import matplotlib.pyplot as plt
+import numpy as np
 
 import warnings
 warnings.filterwarnings('ignore')
@@ -29,7 +30,7 @@ def save_state(model, best_acc):
     torch.save(state, 'Models/net_binary.pth.tar')
 
 
-def train(epoch):
+def train(epoch, expt_no):
 
     model.train()
 
@@ -54,6 +55,8 @@ def train(epoch):
 
         optimizer.step()
 
+        print('Expt {}:').format(expt_no)
+
         if batch_idx % 100 == 0:
             print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}\tLR: {}'.format(
                 epoch, batch_idx * len(data), len(trainloader.dataset),
@@ -62,7 +65,7 @@ def train(epoch):
     return
 
 
-def test():
+def test(expt_no):
     global best_acc
     model.eval()
     test_loss = 0
@@ -91,9 +94,11 @@ def test():
     test_loss_list.append(test_loss)
     test_acc_list.append(acc)
 
-    print('\nTest set: Average loss: {:.4f}, Accuracy: {}/{} ({:.2f}%)'.format(
+    print('\nExpt {}:').format(expt_no)
+    print('Test set: Average loss: {:.4f}, Accuracy: {}/{} ({:.2f}%)'.format(
         test_loss * 128., correct, len(testloader.dataset), acc))
     print('Best Accuracy: {:.2f}%\n'.format(best_acc))
+
     return
 
 
@@ -105,7 +110,7 @@ def adjust_learning_rate(optimizer, epoch):
     return
 
 
-def draw():
+def draw(expt_no):
     x1 = x2 = range(epoch_start, epoch_end, 10)
     y1 = test_acc_list
     y2 = test_loss_list
@@ -117,7 +122,7 @@ def draw():
     plt.plot(x2, y2, '.-')
     plt.xlabel('Test loss vs. epoches')
     plt.ylabel('Test loss')
-    plt.savefig("accuracy_loss.jpg")
+    plt.savefig("accuracy_loss"+str(expt_no)+'.jpg')
     plt.show()
     return
 
@@ -137,6 +142,10 @@ if __name__ == '__main__':
                         help='the end range of epoch')
     parser.add_argument('--full', action='store', default=False,
                         help='use full-precision')
+    parser.add_argument('--snps', action='store', default=False,
+                        help='use snps model')
+    parser.add_argument('--expt_num', action='store', default=10,
+                        help='the num of the experiment')
     args = parser.parse_args()
     print('==> Options:', args)
 
@@ -153,9 +162,14 @@ if __name__ == '__main__':
 
     # define the model
     if not args.full:
-        model = net_binary.Net()
+        if not args.snps:
+            model = net_binary.Net()
+        else:
+            model = snps_binary.Net()
     else:
-        model = net.Net()
+        if not args.snps:
+            model = net.Net()
+            model = snps.Net()
 
     # initialize the model
     if not args.pretrained:
@@ -199,11 +213,19 @@ if __name__ == '__main__':
 
     epoch_start = int(args.epoch_start)
     epoch_end = int(args.epoch_end)
-
+    expt_num = int(args.expt_num)
+    acc = []
     # start training
-    for epoch in range(epoch_start, epoch_end):
-        adjust_learning_rate(optimizer, epoch)
-        train(epoch)
-        test()
-
-    draw()
+    for i in range(expt_num):
+        best_acc = 0
+        for epoch in range(epoch_start, epoch_end):
+            adjust_learning_rate(optimizer, epoch)
+            train(epoch, i+1)
+            test(i+1)
+        with open('data.txt', 'a') as f:
+            f.write('Expt {}: Best Accuracy: {:.2f}%\n'.format(i+1, best_acc))
+        acc.append(best_acc)
+        draw(i+1)
+    with open('data.txt', 'a') as f:
+        f.write('Mean: {}\n'.format(np.mean(acc)))
+        f.write('Var: {}'.format(np.var(acc)))
