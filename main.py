@@ -107,22 +107,6 @@ def adjust_learning_rate(optimizer, epoch):
     return
 
 
-def draw(expt_no):
-    x1 = x2 = range(epoch_start, epoch_end)
-    y1 = test_acc_list
-    y2 = test_loss_list
-    plt.subplot(2, 1, 1)
-    plt.plot(x1, y1, 'r-')
-    plt.title('Test accuracy vs. epoches' + str(expt_no))
-    plt.ylabel('Test accuracy')
-    plt.subplot(2, 1, 2)
-    plt.plot(x2, y2, 'g-', marker='*')
-    plt.xlabel('Test loss vs. epoches')
-    plt.ylabel('Test loss')
-    plt.savefig("accuracy_loss" + str(expt_no) + '.jpg')
-    return
-
-
 if __name__ == '__main__':
     # prepare the options
     parser = argparse.ArgumentParser()
@@ -223,7 +207,6 @@ if __name__ == '__main__':
         with open('data.txt', 'a') as f:
             f.write('Expt {}: Best Accuracy: {:.2f}%\n'.format(i+1, best_acc))
         acc.append(best_acc)
-        draw(i+1)
 
     with open('data.txt', 'a') as f:
         f.write('Mean: {}\n'.format(np.mean(acc)))
