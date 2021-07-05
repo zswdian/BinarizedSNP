@@ -55,7 +55,7 @@ def train(epoch, expt_no):
 
         optimizer.step()
 
-        print('Expt {}:').format(expt_no)
+        print('Expt {}:'.format(expt_no))
 
         if batch_idx % 100 == 0:
             print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}\tLR: {}'.format(
