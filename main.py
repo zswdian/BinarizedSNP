@@ -166,6 +166,7 @@ if __name__ == '__main__':
     else:
         if not args.snps:
             model = net.Net()
+        else:
             model = snps.Net()
 
     # initialize the model
