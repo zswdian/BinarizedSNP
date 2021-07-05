@@ -17,15 +17,6 @@ import warnings
 warnings.filterwarnings('ignore')
 
 
-def weight_init(m):
-    if isinstance(m, nn.Conv2d):
-        n = m.kernel_size[0] * m.kernel_size[1] * m.out_channels
-        m.weight.data.normal_(0, np.sqrt(2./n))
-    elif isinstance(m, nn.BatchNorm2d):
-        m.weight.data.fill_(1)
-        m.bias.data.zero_()
-
-
 def save_state(model, best_acc):
     print('==> Saving model ...')
     state = {
@@ -165,55 +156,6 @@ if __name__ == '__main__':
     # define classes
     classes = Data.classes
 
-    # define the model
-    if not args.full:
-        if not args.snps:
-            model = net_binary.Net()
-        else:
-            model = snps_binary.Net()
-    else:
-        if not args.snps:
-            model = net.Net()
-        else:
-            model = snps.Net()
-
-    # initialize the model
-    if not args.pretrained:
-        print('==> Initializing model parameters ...')
-        best_acc = 0
-        for m in model.modules():
-            if isinstance(m, nn.Conv2d):
-                m.weight.data.normal_(0, 0.05)
-                m.bias.data.zero_()
-    else:
-        print('==> Load pretrained model form', args.pretrained, '...')
-        pretrained_model = torch.load('Models/net_binary.pth.tar')
-        best_acc = pretrained_model['best_acc']
-        model.load_state_dict(pretrained_model['state_dict'])
-
-    model.cuda()
-    model = torch.nn.DataParallel(model, device_ids=range(torch.cuda.device_count()))
-
-    # define solver and criterion
-    base_lr = float(args.lr)
-    param_dict = dict(model.named_parameters())
-    params = []
-
-    for key, value in param_dict.items():
-        params += [{'params': [value], 'lr': base_lr, 'weight_decay': 0.00001}]
-
-    optimizer = optim.Adam(params, lr=0.10, weight_decay=0.00001)
-    criterion = nn.CrossEntropyLoss()
-
-    # define the binarization operator
-    if not args.full:
-        bin_op = util.BinOp(model)
-
-    # do the evaluation if specified
-    if args.evaluate:
-        test()
-        exit(0)
-
     test_loss_list = []
     test_acc_list = []
 
@@ -223,7 +165,57 @@ if __name__ == '__main__':
     acc = []
     # start training
     for i in range(expt_num):
+        # define the model
+        if not args.full:
+            if not args.snps:
+                model = net_binary.Net()
+            else:
+                model = snps_binary.Net()
+        else:
+            if not args.snps:
+                model = net.Net()
+            else:
+                model = snps.Net()
+
+        # initialize the model
+        if not args.pretrained:
+            print('==> Initializing model parameters ...')
+            best_acc = 0
+            for m in model.modules():
+                if isinstance(m, nn.Conv2d):
+                    m.weight.data.normal_(0, 0.05)
+                    m.bias.data.zero_()
+        else:
+            print('==> Load pretrained model form', args.pretrained, '...')
+            pretrained_model = torch.load('Models/net_binary.pth.tar')
+            best_acc = pretrained_model['best_acc']
+            model.load_state_dict(pretrained_model['state_dict'])
+
+        model.cuda()
+        model = torch.nn.DataParallel(model, device_ids=range(torch.cuda.device_count()))
+
+        # define solver and criterion
+        base_lr = float(args.lr)
+        param_dict = dict(model.named_parameters())
+        params = []
+
+        for key, value in param_dict.items():
+            params += [{'params': [value], 'lr': base_lr, 'weight_decay': 0.00001}]
+
+        optimizer = optim.Adam(params, lr=0.10, weight_decay=0.00001)
+        criterion = nn.CrossEntropyLoss()
+
+        # define the binarization operator
+        if not args.full:
+            bin_op = util.BinOp(model)
+
+        # do the evaluation if specified
+        if args.evaluate:
+            test()
+            exit(0)
+
         best_acc = 0
+
         for epoch in range(epoch_start, epoch_end):
             adjust_learning_rate(optimizer, epoch)
             train(epoch, i+1)
@@ -232,7 +224,6 @@ if __name__ == '__main__':
             f.write('Expt {}: Best Accuracy: {:.2f}%\n'.format(i+1, best_acc))
         acc.append(best_acc)
         draw(i+1)
-        model.apply(weight_init)
 
     with open('data.txt', 'a') as f:
         f.write('Mean: {}\n'.format(np.mean(acc)))
