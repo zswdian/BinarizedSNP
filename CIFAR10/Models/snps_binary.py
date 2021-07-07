@@ -1,5 +1,5 @@
 import torch.nn as nn
-from .BinarizedModules import BinSNPSConv2d
+from BinarizedModules import BinSNPSConv2d
 
 
 class Net(nn.Module):

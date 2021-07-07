@@ -5,8 +5,10 @@ from __future__ import print_function
 import torch
 import torch.nn as nn
 import torch.optim as optim
-import Data
-from Models import net_binary, net, snps, snps_binary
+from CIFAR10 import CIFAR_Data
+import CIFAR10.Models as cifar
+from MNIST import MNIST_Data
+import MNIST.Models as mnist
 import util
 import argparse
 from torch.autograd import Variable
@@ -107,6 +109,17 @@ def adjust_learning_rate(optimizer, epoch):
     return
 
 
+def draw(expt_no):
+    x1 = x2 = range(1, epochs)
+    y1 = test_acc_list
+    y2 = test_loss_list
+    plt.figure(expt_no)
+    plt.plot(x1, y1, 'r', '-', marker='*')
+    plt.plot(x2, y2, 'b', '-.', marker='*')
+    plt.savefig('acc_loss' + str(expt_no) + '.jpg')
+    return
+
+
 if __name__ == '__main__':
     # prepare the options
     parser = argparse.ArgumentParser()
@@ -116,16 +129,20 @@ if __name__ == '__main__':
                         help='the path to the pretrained model')
     parser.add_argument('--evaluate', action='store_true',
                         help='evaluate the model')
-    parser.add_argument('--epoch_start', action='store', default='0',
+    parser.add_argument('--epochs', action='store', default='0',
                         help='the start range of epoch')
-    parser.add_argument('--epoch_end', action='store', default='320',
-                        help='the end range of epoch')
     parser.add_argument('--full', action='store', default=False,
                         help='use full-precision')
     parser.add_argument('--snps', action='store', default=False,
                         help='use snps model')
     parser.add_argument('--expt_num', action='store', default=10,
                         help='the num of the experiment')
+    parser.add_argument('--cifar', action='store', default=False,
+                        help='use CIFAR10')
+    parser.add_argument('--mnist', action='store', default=False,
+                        help='use MNIST')
+    parser.add_argument('--imagenet', action='store', default=False,
+                        help='use ImageNet')
     args = parser.parse_args()
     print('==> Options:', args)
 
@@ -134,32 +151,58 @@ if __name__ == '__main__':
     torch.cuda.manual_seed(1)
 
     # prepare the data
-    trainloader = Data.trainloader
-    testloader = Data.testloader
-
-    # define classes
-    classes = Data.classes
+    if args.cifar:
+        trainloader = CIFAR_Data.trainloader
+        testloader = CIFAR_Data.testloader
+    elif args.mnist:
+        trainloader = MNIST_Data.trainloader
+        testloader = MNIST_Data.testloader
+    else:
+        trainloader = MNIST_Data.trainloader
+        testloader = MNIST_Data.testloader
 
     test_loss_list = []
     test_acc_list = []
 
-    epoch_start = int(args.epoch_start)
-    epoch_end = int(args.epoch_end)
+    epochs = int(args.epochs)
     expt_num = int(args.expt_num)
     acc = []
     # start training
     for i in range(expt_num):
         # define the model
-        if not args.full:
-            if not args.snps:
-                model = net_binary.Net()
+        if args.cifar:
+            if not args.full:
+                if not args.snps:
+                    model = cifar.net_binary.Net()
+                else:
+                    model = cifar.snps_binary.Net()
             else:
-                model = snps_binary.Net()
-        else:
-            if not args.snps:
-                model = net.Net()
+                if not args.snps:
+                    model = cifar.net.Net()
+                else:
+                    model = cifar.snps.Net()
+        elif args.mnist:
+            if not args.full:
+                if not args.snps:
+                    model = mnist.net_binary.Net()
+                else:
+                    model = mnist.snps_binary.Net()
             else:
-                model = snps.Net()
+                if not args.snps:
+                    model = mnist.net.Net()
+                else:
+                    model = mnist.snps.Net()
+        # elif args.imagenet:
+        #     if not args.full:
+        #         if not args.snps:
+        #             model = imagenet.net_binary.Net()
+        #         else:
+        #             model = imagenet.snps_binary.Net()
+        #     else:
+        #         if not args.snps:
+        #             model = imagenet.net.Net()
+        #         else:
+        #             model = imagenet.snps.Net()
 
         # initialize the model
         if not args.pretrained:
@@ -200,13 +243,14 @@ if __name__ == '__main__':
 
         best_acc = 0
 
-        for epoch in range(epoch_start, epoch_end):
+        for epoch in range(1, epochs+1):
             adjust_learning_rate(optimizer, epoch)
             train(epoch, i+1)
             test()
         with open('data.txt', 'a') as f:
             f.write('Expt {}: Best Accuracy: {:.2f}%\n'.format(i+1, best_acc))
         acc.append(best_acc)
+        draw(i+1)
 
     with open('data.txt', 'a') as f:
         f.write('Mean: {}\n'.format(np.mean(acc)))
