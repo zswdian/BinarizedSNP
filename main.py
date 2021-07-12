@@ -6,7 +6,10 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from CIFAR10 import CIFAR_Data
-import CIFAR10.Models as cifar
+from CIFAR10.Models import net as cn
+from CIFAR10.Models import net_binary as cnb
+from CIFAR10.Models import snps as cs
+from CIFAR10.Models import snps_binary as csb
 from MNIST import MNIST_Data
 import MNIST.Models as mnist
 import util
@@ -157,9 +160,9 @@ if __name__ == '__main__':
     elif args.mnist:
         trainloader = MNIST_Data.trainloader
         testloader = MNIST_Data.testloader
-    else:
-        trainloader = MNIST_Data.trainloader
-        testloader = MNIST_Data.testloader
+    # else:
+    #     trainloader = MNIST_Data.trainloader
+    #     testloader = MNIST_Data.testloader
 
     test_loss_list = []
     test_acc_list = []
@@ -173,25 +176,25 @@ if __name__ == '__main__':
         if args.cifar:
             if not args.full:
                 if not args.snps:
-                    model = cifar.net_binary.Net()
+                    model = cnb.Net()
                 else:
-                    model = cifar.snps_binary.Net()
+                    model = csb.Net()
             else:
                 if not args.snps:
-                    model = cifar.net.Net()
+                    model = cn.Net()
                 else:
-                    model = cifar.snps.Net()
-        elif args.mnist:
-            if not args.full:
-                if not args.snps:
-                    model = mnist.net_binary.Net()
-                else:
-                    model = mnist.snps_binary.Net()
-            else:
-                if not args.snps:
-                    model = mnist.net.Net()
-                else:
-                    model = mnist.snps.Net()
+                    model = cs.Net()
+        # elif args.mnist:
+        #     if not args.full:
+        #         if not args.snps:
+        #             model = mnist.net_binary.Net()
+        #         else:
+        #             model = mnist.snps_binary.Net()
+        #     else:
+        #         if not args.snps:
+        #             model = mnist.net.Net()
+        #         else:
+        #             model = mnist.snps.Net()
         # elif args.imagenet:
         #     if not args.full:
         #         if not args.snps:
