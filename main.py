@@ -250,7 +250,7 @@ if __name__ == '__main__':
         with open('data.txt', 'a') as f:
             f.write('Expt {}: Best Accuracy: {:.2f}%\n'.format(i+1, best_acc))
         acc.append(best_acc)
-        draw(i+1)
+        # draw(i+1)
 
     with open('data.txt', 'a') as f:
         f.write('Mean: {}\n'.format(np.mean(acc)))
