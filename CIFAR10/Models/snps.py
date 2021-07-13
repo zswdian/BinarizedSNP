@@ -7,7 +7,7 @@ class Net(nn.Module):
         super(Net, self).__init__()
         self.snps = nn.Sequential(
             # nn.PReLU(),
-            nn.ReLU(inplace=True),
+            # nn.ReLU(inplace=True),
             nn.Conv2d(3, 192, kernel_size=5, stride=1, padding=2),
             nn.BatchNorm2d(192, eps=1e-4, momentum=0.1, affine=False),
             # nn.PReLU(),
@@ -45,7 +45,7 @@ class Net(nn.Module):
             nn.Conv2d(192, 192, kernel_size=1, stride=1, padding=0),
             nn.BatchNorm2d(192, eps=1e-4, momentum=0.1, affine=False),
             # nn.PReLU(),
-            nn.ReLU(inplace=True),
+            # nn.ReLU(inplace=True),
             nn.Conv2d(192, 10, kernel_size=1, stride=1, padding=0),
             nn.AvgPool2d(kernel_size=8, stride=1, padding=0),
         )
