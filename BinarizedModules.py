@@ -63,8 +63,8 @@ class BinSNPSConv2d(nn.Module):
         self.pRelu = nn.PReLU()
 
     def forward(self, input):
-        x = self.bn(input)
         x = self.pRelu(x)
+        x = self.bn(input)
         x = BinActive()(x)
         if self.dropout_ratio != 0:
             x = self.dropout(x)
