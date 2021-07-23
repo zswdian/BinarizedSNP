@@ -22,11 +22,11 @@ import warnings
 warnings.filterwarnings('ignore')
 
 
-def save_state(expt_no, model, best_acc, best_acc_output):
+def save_state(expt_no, model, acc, output):
     print('==> Saving model ...')
     state = {
-        'best_acc': best_acc,
-        'best_acc_output': best_acc_output,
+        'best_acc': acc,
+        'best_output': output,
         'state_dict': model.state_dict(),
     }
     for key in list(state['state_dict'].keys()):
@@ -93,8 +93,8 @@ def test(expt_no):
 
     if acc > best_acc:
         best_acc = acc
-        best_acc_output = output
-        save_state(expt_no, model, best_acc, best_acc_output)
+        best_output = output
+        save_state(expt_no, model, best_acc, best_output)
 
     test_loss /= len(testloader.dataset)
 
@@ -188,17 +188,17 @@ if __name__ == '__main__':
                     model = cn.Net()
                 else:
                     model = cs.Net()
-        # elif args.mnist:
-        #     if not args.full:
-        #         if not args.snps:
-        #             model = mnist.net_binary.Net()
-        #         else:
-        #             model = mnist.snps_binary.Net()
-        #     else:
-        #         if not args.snps:
-        #             model = mnist.net.Net()
-        #         else:
-        #             model = mnist.snps.Net()
+        elif args.mnist:
+            if not args.full:
+                if not args.snps:
+                    model = mnist.net_binary.Net()
+                else:
+                    model = mnist.snps_binary.Net()
+            else:
+                if not args.snps:
+                    model = mnist.net.Net()
+                else:
+                    model = mnist.snps.Net()
         # elif args.imagenet:
         #     if not args.full:
         #         if not args.snps:
@@ -246,7 +246,7 @@ if __name__ == '__main__':
 
         # do the evaluation if specified
         if args.evaluate:
-            test()
+            test(i+1)
             exit(0)
 
         best_acc = 0
@@ -255,6 +255,7 @@ if __name__ == '__main__':
             adjust_learning_rate(optimizer, epoch)
             train(epoch, i+1)
             test(i+1)
+
         with open('data.txt', 'a') as f:
             f.write('Expt {}: Best Accuracy: {:.2f}%\n'.format(i+1, best_acc))
         acc.append(best_acc)
