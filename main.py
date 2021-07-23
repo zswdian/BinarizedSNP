@@ -22,17 +22,18 @@ import warnings
 warnings.filterwarnings('ignore')
 
 
-def save_state(model, best_acc):
+def save_state(expt_no, model, best_acc, best_acc_output):
     print('==> Saving model ...')
     state = {
         'best_acc': best_acc,
+        'best_acc_output': best_acc_output,
         'state_dict': model.state_dict(),
     }
     for key in list(state['state_dict'].keys()):
         if 'module' in key:
             state['state_dict'][key.replace('module.', '')] = \
                 state['state_dict'].pop(key)
-    torch.save(state, 'Models/net_binary.pth.tar')
+    torch.save(state, './Experiment/data' + str(expt_no) + '.pth.tar')
 
 
 def train(epoch, expt_no):
@@ -68,11 +69,13 @@ def train(epoch, expt_no):
     return
 
 
-def test():
+def test(expt_no):
     global best_acc
+    global beat_acc_output
     model.eval()
     test_loss = 0
     correct = 0
+    output = 0
     if not args.full:
         bin_op.binarization()
 
@@ -90,7 +93,8 @@ def test():
 
     if acc > best_acc:
         best_acc = acc
-        save_state(model, best_acc)
+        best_acc_output = output
+        save_state(expt_no, model, best_acc, best_acc_output)
 
     test_loss /= len(testloader.dataset)
 
@@ -219,6 +223,7 @@ if __name__ == '__main__':
             print('==> Load pretrained model form', args.pretrained, '...')
             pretrained_model = torch.load('Models/net_binary.pth.tar')
             best_acc = pretrained_model['best_acc']
+            best_acc_output = pretrained_model['best_acc_output']
             model.load_state_dict(pretrained_model['state_dict'])
 
         model.cuda()
@@ -249,7 +254,7 @@ if __name__ == '__main__':
         for epoch in range(1, epochs+1):
             adjust_learning_rate(optimizer, epoch)
             train(epoch, i+1)
-            test()
+            test(i+1)
         with open('data.txt', 'a') as f:
             f.write('Expt {}: Best Accuracy: {:.2f}%\n'.format(i+1, best_acc))
         acc.append(best_acc)
