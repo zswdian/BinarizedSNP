@@ -11,7 +11,10 @@ from CIFAR10.Models import net_binary as cnb
 from CIFAR10.Models import snps as cs
 from CIFAR10.Models import snps_binary as csb
 from MNIST import MNIST_Data
-import MNIST.Models as mnist
+from CIFAR10.Models import net as mn
+from CIFAR10.Models import net_binary as mnb
+from CIFAR10.Models import snps as ms
+from CIFAR10.Models import snps_binary as msb
 import util
 import argparse
 from torch.autograd import Variable
@@ -191,14 +194,14 @@ if __name__ == '__main__':
         elif args.mnist:
             if not args.full:
                 if not args.snps:
-                    model = mnist.net_binary.Net()
+                    model = mnb.Net()
                 else:
-                    model = mnist.snps_binary.Net()
+                    model = msb.Net()
             else:
                 if not args.snps:
-                    model = mnist.net.Net()
+                    model = mn.Net()
                 else:
-                    model = mnist.snps.Net()
+                    model = ms.Net()
         # elif args.imagenet:
         #     if not args.full:
         #         if not args.snps:
