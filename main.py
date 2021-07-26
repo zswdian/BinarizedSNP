@@ -161,6 +161,8 @@ if __name__ == '__main__':
     torch.cuda.manual_seed(1)
 
     # prepare the data
+    trainloader = []
+    testloader = []
     if args.cifar:
         trainloader = CIFAR_Data.trainloader
         testloader = CIFAR_Data.testloader

@@ -49,7 +49,7 @@ class BinSNPSConv2d(nn.Module):
     def __init__(self, input_channels, output_channels, kernel_size=-1,
                  stride=-1, padding=-1, dropout=0):
         super(BinSNPSConv2d, self).__init__()
-        self.layer_type = 'BinConv2d'
+        self.layer_type = 'BinSNPSConv2d'
         self.kernel_size = kernel_size
         self.stride = stride
         self.padding = padding
@@ -63,8 +63,8 @@ class BinSNPSConv2d(nn.Module):
         self.pRelu = nn.PReLU()
 
     def forward(self, input):
-        x = self.pRelu(x)
-        x = self.bn(input)
+        x = self.pRelu(input)
+        x = self.bn(x)
         x = BinActive()(x)
         if self.dropout_ratio != 0:
             x = self.dropout(x)
