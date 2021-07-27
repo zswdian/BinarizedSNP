@@ -36,7 +36,7 @@ def save_state(expt_no, model, acc, output):
         if 'module' in key:
             state['state_dict'][key.replace('module.', '')] = \
                 state['state_dict'].pop(key)
-    torch.save(state, './MNIST/Experiment/data_' + str(expt_no) + '.pth.tar')
+    torch.save(state, './MNIST/Experiment/data_snps_' + str(expt_no) + '.pth.tar')
 
 
 def train(epoch, expt_no):
@@ -261,11 +261,11 @@ if __name__ == '__main__':
             train(epoch, i+1)
             test(i+1)
 
-        with open('mnist_data.txt', 'a') as f:
+        with open('mnist_data_snps.txt', 'a') as f:
             f.write('Expt {}: Best Accuracy: {:.2f}%\n'.format(i+1, best_acc))
         acc.append(best_acc)
         # draw(i+1)
 
-    with open('mnist_data.txt', 'a') as f:
+    with open('mnist_data_snps.txt', 'a') as f:
         f.write('Mean: {}\n'.format(np.mean(acc)))
         f.write('Var: {}'.format(np.var(acc)))
