@@ -141,17 +141,17 @@ if __name__ == '__main__':
                         help='evaluate the model')
     parser.add_argument('--epochs', action='store', default='0',
                         help='the start range of epoch')
-    parser.add_argument('--full', action='store', default=False,
+    parser.add_argument('--full', action='store', default='False',
                         help='use full-precision')
-    parser.add_argument('--snps', action='store', default=False,
+    parser.add_argument('--snps', action='store', default='False',
                         help='use snps model')
     parser.add_argument('--expt_num', action='store', default=10,
                         help='the num of the experiment')
-    parser.add_argument('--cifar', action='store', default=False,
+    parser.add_argument('--cifar', action='store', default='False',
                         help='use CIFAR10')
-    parser.add_argument('--mnist', action='store', default=False,
+    parser.add_argument('--mnist', action='store', default='False',
                         help='use MNIST')
-    parser.add_argument('--imagenet', action='store', default=False,
+    parser.add_argument('--imagenet', action='store', default='False',
                         help='use ImageNet')
     args = parser.parse_args()
     print('==> Options:', args)
