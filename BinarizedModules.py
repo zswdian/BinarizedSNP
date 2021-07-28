@@ -9,7 +9,7 @@ class BinActive(torch.autograd.Function):
         return input.sign()
 
     def backward(self, grad_output):
-        input = self.saved_tensors
+        input, = self.saved_tensors
         grad_input = grad_output.clone()
         grad_input[input.le(-1)] = 0
         grad_input[input.ge(1)] = 0

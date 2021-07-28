@@ -296,7 +296,7 @@ if __name__ == '__main__':
 
         # do the evaluation if specified
         if args.evaluate:
-            test(i + 1, args.imagenet)
+            test(i + 1, name, args.imagenet)
             exit(0)
 
         best_acc = 0
@@ -305,7 +305,7 @@ if __name__ == '__main__':
         for epoch in range(1, epochs + 1):
             adjust_learning_rate(optimizer, epoch)
             train(epoch, i + 1)
-            test(i + 1, args.imagenet)
+            test(i + 1, name, args.imagenet)
 
         filename = name + '_' + type + '.txt'
 
