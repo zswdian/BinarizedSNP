@@ -11,10 +11,10 @@ from CIFAR10.Models import net_binary as cnb
 from CIFAR10.Models import snps as cs
 from CIFAR10.Models import snps_binary as csb
 from MNIST import MNIST_Data
-from CIFAR10.Models import net as mn
-from CIFAR10.Models import net_binary as mnb
-from CIFAR10.Models import snps as ms
-from CIFAR10.Models import snps_binary as msb
+from MNIST.Models import net as mn
+from MNIST.Models import net_binary as mnb
+from MNIST.Models import snps as ms
+from MNIST.Models import snps_binary as msb
 from ImageNet import IMAGENET_Data
 from ImageNet.Models import net as inn
 from ImageNet.Models import net_binary as innb
@@ -195,6 +195,7 @@ if __name__ == '__main__':
     # prepare the data
     trainloader = []
     testloader = []
+
     if args.cifar:
         trainloader = CIFAR_Data.trainloader
         testloader = CIFAR_Data.testloader
