@@ -44,6 +44,7 @@ def save_state(expt_no, model, acc, output):
                 state['state_dict'].pop(key)
     torch.save(state, './ImageNet/Experiment/data_net_' + str(expt_no) + '.pth.tar')
 
+
 def save_state_5(expt_no, model, acc_5, output):
     print('==> Saving model ...')
     state = {
@@ -56,6 +57,7 @@ def save_state_5(expt_no, model, acc_5, output):
             state['state_dict'][key.replace('module.', '')] = \
                 state['state_dict'].pop(key)
     torch.save(state, './ImageNet/Experiment/data5_net_' + str(expt_no) + '.pth.tar')
+
 
 def train(epoch, expt_no):
     model.train()
@@ -116,7 +118,6 @@ def test(expt_no, flag):
                 cor = predict_5.eq(target.view(-1, 1)).expand_as(predict_5)
                 correct_5 += cor[:5].view(-1).float().sum(0, keepdim=True)
 
-
     acc = 100. * correct / len(testloader.dataset)
 
     if acc > best_acc:
@@ -172,17 +173,17 @@ if __name__ == '__main__':
                         help='evaluate the model')
     parser.add_argument('--epochs', action='store', default='0',
                         help='the start range of epoch')
-    parser.add_argument('--full', action='store', default='False',
+    parser.add_argument('--full', action='store', default=None,
                         help='use full-precision')
-    parser.add_argument('--snps', action='store', default='False',
+    parser.add_argument('--snps', action='store', default=None,
                         help='use snps model')
     parser.add_argument('--expt_num', action='store', default=10,
                         help='the num of the experiment')
-    parser.add_argument('--cifar', action='store', default='False',
+    parser.add_argument('--cifar', action='store', default=None,
                         help='use CIFAR10')
-    parser.add_argument('--mnist', action='store', default='False',
+    parser.add_argument('--mnist', action='store', default=None,
                         help='use MNIST')
-    parser.add_argument('--imagenet', action='store', default='False',
+    parser.add_argument('--imagenet', action='store', default=None,
                         help='use ImageNet')
     args = parser.parse_args()
     print('==> Options:', args)
