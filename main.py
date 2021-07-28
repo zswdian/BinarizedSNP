@@ -44,6 +44,18 @@ def save_state(expt_no, model, acc, output):
                 state['state_dict'].pop(key)
     torch.save(state, './ImageNet/Experiment/data_net_' + str(expt_no) + '.pth.tar')
 
+def save_state_5(expt_no, model, acc_5, output):
+    print('==> Saving model ...')
+    state = {
+        'best_acc_5': acc_5,
+        'best_output': output,
+        'state_dict': model.state_dict(),
+    }
+    for key in list(state['state_dict'].keys()):
+        if 'module' in key:
+            state['state_dict'][key.replace('module.', '')] = \
+                state['state_dict'].pop(key)
+    torch.save(state, './ImageNet/Experiment/data5_net_' + str(expt_no) + '.pth.tar')
 
 def train(epoch, expt_no):
     model.train()
@@ -77,12 +89,14 @@ def train(epoch, expt_no):
     return
 
 
-def test(expt_no):
+def test(expt_no, flag):
     global best_acc
+    global best_acc_5
     global beat_acc_output
     model.eval()
     test_loss = 0
     correct = 0
+    correct_5 = 0
     output = []
     if not args.full:
         bin_op.binarization()
@@ -96,6 +110,12 @@ def test(expt_no):
             predict = output.data.max(1, keepdim=True)[1]
             correct += predict.eq(target.data.view_as(predict)).cpu().sum()
             # correct += predict.eq(target.data.view_as(predict)).sum()
+            if flag:
+                _, predict_5 = output.topk(5, 1, True, True)
+                predict_5.t()
+                cor = predict_5.eq(target.view(-1, 1)).expand_as(predict_5)
+                correct_5 += cor[:5].view(-1).float().sum(0, keepdim=True)
+
 
     acc = 100. * correct / len(testloader.dataset)
 
@@ -103,6 +123,13 @@ def test(expt_no):
         best_acc = acc
         best_output = output
         save_state(expt_no, model, best_acc, best_output)
+
+    if flag:
+        acc_5 = 100. * correct / len(testloader.dataset)
+        if acc_5 > best_acc_5:
+            best_acc_5 = acc_5
+            best_output = output
+            save_state_5(expt_no, model, best_acc_5, best_output)
 
     test_loss /= len(testloader.dataset)
 
@@ -112,7 +139,6 @@ def test(expt_no):
     print('\nTest set: Average loss: {:.4f}, Accuracy: {}/{} ({:.2f}%)'.format(
         test_loss * 128., correct, len(testloader.dataset), acc))
     print('Best Accuracy: {:.2f}%\n'.format(best_acc))
-
     return
 
 
@@ -184,6 +210,7 @@ if __name__ == '__main__':
     epochs = int(args.epochs)
     expt_num = int(args.expt_num)
     acc = []
+    acc_5 = []
     # start training
     for i in range(expt_num):
         # define the model
@@ -256,21 +283,29 @@ if __name__ == '__main__':
 
         # do the evaluation if specified
         if args.evaluate:
-            test(i + 1)
+            test(i + 1, args.imagenet)
             exit(0)
 
         best_acc = 0
+        best_acc_5 = 0
 
         for epoch in range(1, epochs + 1):
             adjust_learning_rate(optimizer, epoch)
             train(epoch, i + 1)
-            test(i + 1)
+            test(i + 1, args.imagenet)
 
         with open('image_data.txt', 'a') as f:
             f.write('Expt {}: Best Accuracy: {:.2f}%\n'.format(i + 1, best_acc))
+            if args.imagenet:
+                f.write('Expt {}: Best Accuracy: {:.2f}%\n'.format(i + 1, best_acc_5))
         acc.append(best_acc)
+        if args.imagenet:
+            acc_5.append(best_acc_5)
         # draw(i+1)
 
     with open('image_data.txt', 'a') as f:
         f.write('Mean: {}\n'.format(np.mean(acc)))
         f.write('Var: {}'.format(np.var(acc)))
+        if args.imagenet:
+            f.write('Mean_5: {}\n'.format(np.mean(acc_5)))
+            f.write('Var_5: {}'.format(np.var(acc_5)))
