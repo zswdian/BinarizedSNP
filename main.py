@@ -15,6 +15,11 @@ from CIFAR10.Models import net as mn
 from CIFAR10.Models import net_binary as mnb
 from CIFAR10.Models import snps as ms
 from CIFAR10.Models import snps_binary as msb
+from ImageNet import IMAGENET_Data
+from ImageNet.Models import net as inn
+from ImageNet.Models import net_binary as innb
+from ImageNet.Models import snps as ins
+from ImageNet.Models import snps_binary as insb
 import util
 import argparse
 from torch.autograd import Variable
@@ -22,6 +27,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 import warnings
+
 warnings.filterwarnings('ignore')
 
 
@@ -36,11 +42,10 @@ def save_state(expt_no, model, acc, output):
         if 'module' in key:
             state['state_dict'][key.replace('module.', '')] = \
                 state['state_dict'].pop(key)
-    torch.save(state, './MNIST/Experiment/data_snps_bin_' + str(expt_no) + '.pth.tar')
+    torch.save(state, './ImageNet/Experiment/data_net_' + str(expt_no) + '.pth.tar')
 
 
 def train(epoch, expt_no):
-
     model.train()
 
     for batch_idx, (data, target) in enumerate(trainloader):
@@ -67,7 +72,7 @@ def train(epoch, expt_no):
         if batch_idx % 100 == 0:
             print('Expt{}: Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}\tLR: {}'.format(
                 expt_no, epoch, batch_idx * len(data), len(trainloader.dataset),
-                100. * batch_idx / len(trainloader), loss.data.item(),
+                                100. * batch_idx / len(trainloader), loss.data.item(),
                 optimizer.param_groups[0]['lr']))
     return
 
@@ -169,9 +174,9 @@ if __name__ == '__main__':
     elif args.mnist:
         trainloader = MNIST_Data.trainloader
         testloader = MNIST_Data.testloader
-    # else:
-    #     trainloader = MNIST_Data.trainloader
-    #     testloader = MNIST_Data.testloader
+    else:
+        trainloader = IMAGENET_Data.trainloader
+        testloader = IMAGENET_Data.testloader
 
     test_loss_list = []
     test_acc_list = []
@@ -204,32 +209,32 @@ if __name__ == '__main__':
                     model = mn.Net()
                 else:
                     model = ms.Net()
-        # elif args.imagenet:
-        #     if not args.full:
-        #         if not args.snps:
-        #             model = imagenet.net_binary.Net()
-        #         else:
-        #             model = imagenet.snps_binary.Net()
-        #     else:
-        #         if not args.snps:
-        #             model = imagenet.net.Net()
-        #         else:
-        #             model = imagenet.snps.Net()
+        elif args.imagenet:
+            if not args.full:
+                if not args.snps:
+                    model = innb.Net()
+                else:
+                    model = insb.Net()
+            else:
+                if not args.snps:
+                    model = inn.Net()
+                else:
+                    model = ins.Net()
 
-        # initialize the model
-        if not args.pretrained:
+            # initialize the model
+            # if not args.pretrained:
             print('==> Initializing model parameters ...')
             best_acc = 0
             for m in model.modules():
                 if isinstance(m, nn.Conv2d):
                     m.weight.data.normal_(0, 0.05)
                     m.bias.data.zero_()
-        else:
-            print('==> Load pretrained model form', args.pretrained, '...')
-            pretrained_model = torch.load('Models/net_binary.pth.tar')
-            best_acc = pretrained_model['best_acc']
-            best_acc_output = pretrained_model['best_acc_output']
-            model.load_state_dict(pretrained_model['state_dict'])
+        # else:
+        #     print('==> Load pretrained model form', args.pretrained, '...')
+        #     pretrained_model = torch.load('Models/net_binary.pth.tar')
+        #     best_acc = pretrained_model['best_acc']
+        #     best_acc_output = pretrained_model['best_acc_output']
+        #     model.load_state_dict(pretrained_model['state_dict'])
 
         model.cuda()
         model = torch.nn.DataParallel(model, device_ids=range(torch.cuda.device_count()))
@@ -251,21 +256,21 @@ if __name__ == '__main__':
 
         # do the evaluation if specified
         if args.evaluate:
-            test(i+1)
+            test(i + 1)
             exit(0)
 
         best_acc = 0
 
-        for epoch in range(1, epochs+1):
+        for epoch in range(1, epochs + 1):
             adjust_learning_rate(optimizer, epoch)
-            train(epoch, i+1)
-            test(i+1)
+            train(epoch, i + 1)
+            test(i + 1)
 
-        with open('mnist_data_snps_bin.txt', 'a') as f:
-            f.write('Expt {}: Best Accuracy: {:.2f}%\n'.format(i+1, best_acc))
+        with open('image_data.txt', 'a') as f:
+            f.write('Expt {}: Best Accuracy: {:.2f}%\n'.format(i + 1, best_acc))
         acc.append(best_acc)
         # draw(i+1)
 
-    with open('mnist_data_snps_bin.txt', 'a') as f:
+    with open('image_data.txt', 'a') as f:
         f.write('Mean: {}\n'.format(np.mean(acc)))
         f.write('Var: {}'.format(np.var(acc)))
