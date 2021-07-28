@@ -167,23 +167,23 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--lr', action='store', default='0.01',
                         help='the intial learning rate')
-    parser.add_argument('--pretrained', action='store', default=None,
+    parser.add_argument('--pretrained', action='store_true',
                         help='the path to the pretrained model')
     parser.add_argument('--evaluate', action='store_true',
                         help='evaluate the model')
     parser.add_argument('--epochs', action='store', default='0',
                         help='the start range of epoch')
-    parser.add_argument('--full', action='store', default=None,
+    parser.add_argument('--full', action='store_true',
                         help='use full-precision')
-    parser.add_argument('--snps', action='store', default=None,
+    parser.add_argument('--snps', action='store_true',
                         help='use snps model')
     parser.add_argument('--expt_num', action='store', default=10,
                         help='the num of the experiment')
-    parser.add_argument('--cifar', action='store', default=None,
+    parser.add_argument('--cifar', action='store_true',
                         help='use CIFAR10')
-    parser.add_argument('--mnist', action='store', default=None,
+    parser.add_argument('--mnist', action='store_true',
                         help='use MNIST')
-    parser.add_argument('--imagenet', action='store', default=None,
+    parser.add_argument('--imagenet', action='store_true',
                         help='use ImageNet')
     args = parser.parse_args()
     print('==> Options:', args)
