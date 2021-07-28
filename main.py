@@ -152,13 +152,13 @@ def adjust_learning_rate(optimizer, epoch):
 
 
 def draw(expt_no):
-    x1 = x2 = range(1, epochs)
+    x = range(0, epochs)
     y1 = test_acc_list
     y2 = test_loss_list
     plt.figure(expt_no)
-    plt.plot(x1, y1, 'r', '-', marker='*')
-    plt.plot(x2, y2, 'b', '-.', marker='*')
-    plt.savefig('acc_loss' + str(expt_no) + '.jpg')
+    plt.plot(x, y1, 'r', '-', marker='*')
+    plt.plot(x, y2, 'b', '-.', marker='*')
+    plt.savefig('acc_loss_' + str(expt_no) + '.jpg')
     return
 
 
@@ -217,15 +217,16 @@ if __name__ == '__main__':
         else:
             type = 'data_snps_bin'
 
-    test_loss_list = []
-    test_acc_list = []
-
     epochs = int(args.epochs)
     expt_num = int(args.expt_num)
-    acc = []
-    acc_5 = []
+    acc_list = []
+    acc_5_list = []
     # start training
     for i in range(expt_num):
+
+        test_loss_list = []
+        test_acc_list = []
+
         # define the model
         if args.cifar:
             if not args.full:
@@ -313,14 +314,14 @@ if __name__ == '__main__':
             f.write('Expt {}: Best Accuracy: {:.2f}%\n'.format(i + 1, best_acc))
             if args.imagenet:
                 f.write('Expt {}: Best Accuracy: {:.2f}%\n'.format(i + 1, best_acc_5))
-        acc.append(best_acc)
+        acc_list.append(best_acc)
         if args.imagenet:
-            acc_5.append(best_acc_5)
+            acc_5_list.append(best_acc_5)
         # draw(i+1)
 
     with open(filename, 'a') as f:
-        f.write('Mean: {}\n'.format(np.mean(acc)))
-        f.write('Var: {}'.format(np.var(acc)))
+        f.write('Mean: {}\n'.format(np.mean(acc_list)))
+        f.write('Var: {}'.format(np.var(acc_list)))
         if args.imagenet:
-            f.write('Mean_5: {}\n'.format(np.mean(acc_5)))
-            f.write('Var_5: {}'.format(np.var(acc_5)))
+            f.write('Mean_5: {}\n'.format(np.mean(acc_5_list)))
+            f.write('Var_5: {}'.format(np.var(acc_5_list)))
