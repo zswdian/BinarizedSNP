@@ -31,7 +31,7 @@ import warnings
 warnings.filterwarnings('ignore')
 
 
-def save_state(expt_no, model, acc, output):
+def save_state(expt_no, model, acc, output, name):
     print('==> Saving model ...')
     state = {
         'best_acc': acc,
@@ -42,7 +42,7 @@ def save_state(expt_no, model, acc, output):
         if 'module' in key:
             state['state_dict'][key.replace('module.', '')] = \
                 state['state_dict'].pop(key)
-    torch.save(state, './ImageNet/Experiment/data_net_' + str(expt_no) + '.pth.tar')
+    torch.save(state, './' + name + '/Experiment/' + type + '_' + str(expt_no) + '.pth.tar')
 
 
 def save_state_5(expt_no, model, acc_5, output):
@@ -91,7 +91,7 @@ def train(epoch, expt_no):
     return
 
 
-def test(expt_no, flag):
+def test(expt_no, name, flag):
     global best_acc
     global best_acc_5
     global beat_acc_output
@@ -123,7 +123,7 @@ def test(expt_no, flag):
     if acc > best_acc:
         best_acc = acc
         best_output = output
-        save_state(expt_no, model, best_acc, best_output)
+        save_state(expt_no, model, best_acc, best_output, name)
 
     if flag:
         acc_5 = 100. * correct / len(testloader.dataset)
@@ -193,18 +193,29 @@ if __name__ == '__main__':
     torch.cuda.manual_seed(1)
 
     # prepare the data
-    trainloader = []
-    testloader = []
-
     if args.cifar:
         trainloader = CIFAR_Data.trainloader
         testloader = CIFAR_Data.testloader
+        name = 'CIFAR10'
     elif args.mnist:
         trainloader = MNIST_Data.trainloader
         testloader = MNIST_Data.testloader
+        name = 'MNIST'
     else:
         trainloader = IMAGENET_Data.trainloader
         testloader = IMAGENET_Data.testloader
+        name = 'ImageNet'
+
+    if args.full:
+        if not args.snps:
+            type = 'data'
+        else:
+            type = 'data_snps'
+    else:
+        if not args.snps:
+            type = 'data_bin'
+        else:
+            type = 'data_snps_bin'
 
     test_loss_list = []
     test_acc_list = []
@@ -296,7 +307,9 @@ if __name__ == '__main__':
             train(epoch, i + 1)
             test(i + 1, args.imagenet)
 
-        with open('image_data.txt', 'a') as f:
+        filename = name + '_' + type + '.txt'
+
+        with open(filename, 'a') as f:
             f.write('Expt {}: Best Accuracy: {:.2f}%\n'.format(i + 1, best_acc))
             if args.imagenet:
                 f.write('Expt {}: Best Accuracy: {:.2f}%\n'.format(i + 1, best_acc_5))
@@ -305,7 +318,7 @@ if __name__ == '__main__':
             acc_5.append(best_acc_5)
         # draw(i+1)
 
-    with open('image_data.txt', 'a') as f:
+    with open(filename, 'a') as f:
         f.write('Mean: {}\n'.format(np.mean(acc)))
         f.write('Var: {}'.format(np.var(acc)))
         if args.imagenet:
