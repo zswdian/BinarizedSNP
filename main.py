@@ -221,6 +221,9 @@ if __name__ == '__main__':
     expt_num = int(args.expt_num)
     acc_list = []
     acc_5_list = []
+
+    filename = './ExpData/' + name + '_' + type + '.txt'
+
     # start training
     for i in range(expt_num):
 
@@ -307,8 +310,6 @@ if __name__ == '__main__':
             adjust_learning_rate(optimizer, epoch)
             train(epoch, i + 1)
             test(i + 1, name, args.imagenet)
-
-        filename = name + '_' + type + '.txt'
 
         with open(filename, 'a') as f:
             f.write('Expt {}: Best Accuracy: {:.2f}%\n'.format(i + 1, best_acc))
