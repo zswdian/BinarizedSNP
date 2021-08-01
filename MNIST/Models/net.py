@@ -16,11 +16,16 @@ class Net(nn.Module):
             nn.PReLU(),
             nn.MaxPool2d(kernel_size=2, stride=2),
             nn.BatchNorm2d(50, eps=1e-4, momentum=0.1, affine=True),
-            nn.Conv2d(50 * 4 * 4, 500, kernel_size=5, stride=1, padding=0),
+        )
+
+        self.classifier = nn.Sequential(
+            nn.Conv2d(50 * 4 * 4, 500, kernel_size=4, stride=1, padding=0),
             nn.PReLU(),
             nn.Linear(500, 10),
         )
 
     def forward(self, x):
         x = self.net(x)
+        x = x.view(x.size(0), 50 * 4 * 4)
+        x = self.classifier(x)
         return x

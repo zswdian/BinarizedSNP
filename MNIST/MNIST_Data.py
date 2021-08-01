@@ -6,7 +6,7 @@ transform = transforms.Compose(
     [transforms.ToTensor(),
      transforms.Normalize((0.1307,), (0.3081,))])
 
-DOWNLOAD = True
+DOWNLOAD = False
 
 trainset = torchvision.datasets.MNIST(root='./MNIST/Data', train=True,
                                         download=DOWNLOAD, transform=transform)
