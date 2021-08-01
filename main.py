@@ -144,7 +144,7 @@ def test(expt_no, name, flag):
 
 
 def adjust_learning_rate(optimizer, epoch):
-    update_list = [40, 60, 80, 100]
+    update_list = [15, 30, 45]
     if epoch in update_list:
         for param_group in optimizer.param_groups:
             param_group['lr'] = param_group['lr'] * 0.1
