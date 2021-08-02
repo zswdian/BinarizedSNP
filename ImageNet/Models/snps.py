@@ -29,10 +29,10 @@ class Net(nn.Module):
 
         self.classifier = nn.Sequential(
             nn.PReLU(),
-            nn.BatchNorm2d(256 * 6 * 6, eps=1e-4, momentum=0.1, affine=True),
-            nn.Linear(256 * 6 * 6, 4096),
+            nn.BatchNorm1d(256 * 8 * 8, eps=1e-4, momentum=0.1, affine=True),
+            nn.Linear(256 * 8 * 8, 4096),
             nn.PReLU(),
-            nn.BatchNorm2d(4096, eps=1e-4, momentum=0.1, affine=True),
+            nn.BatchNorm1d(4096, eps=1e-4, momentum=0.1, affine=True),
             nn.Linear(4096, 4096),
             nn.Dropout(0.5),
             nn.PReLU(),
@@ -43,6 +43,6 @@ class Net(nn.Module):
 
     def forward(self, x):
         x = self.features(x)
-        x = x.view(x.size(0), 256 * 6 * 6)
+        x = x.view(x.size(0), 256 * 8 * 8)
         x = self.classifier(x)
         return x
