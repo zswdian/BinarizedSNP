@@ -14,11 +14,11 @@ import torch.utils.data
 import torch.utils.data.distributed
 # import torchvision.transforms as transforms
 # import torchvision.datasets as datasets
-from ImageNet import IMAGENET_Data
-from ImageNet.Models import net
-from ImageNet.Models import net_binary
-from ImageNet.Models import snps
-from ImageNet.Models import snps_binary
+import IMAGENET_Data
+from Models import net
+from Models import net_binary
+from Models import snps
+from Models import snps_binary
 import util
 import numpy as np
 
@@ -65,11 +65,11 @@ parser.add_argument('--dist-url', default='', type=str,
 parser.add_argument('--dist-backend', default='gloo', type=str,
                     help='distributed backend')
 parser.add_argument('--full', action='store_true',
-                        help='use full-precision')
+                    help='use full-precision')
 parser.add_argument('--snps', action='store_true',
-                        help='use snps model')
+                    help='use snps model')
 parser.add_argument('--expt_num', action='store', default=10,
-                        help='the num of the experiment')
+                    help='the num of the experiment')
 
 best_prec1 = 0
 
@@ -97,7 +97,7 @@ def main():
         else:
             type = 'data_snps_bin'
 
-    filename = './ImageNet/ExpData/' + '_' + type + '.txt'
+    filename = 'ExpData/' + '_' + type + '.txt'
 
     for i in range(1, expt_num):
         # create model
@@ -308,10 +308,10 @@ def validate(val_loader, model, criterion):
 
 
 def save_checkpoint(state, is_best, expt_no):
-    filename = './ImageNet/Experiment/' + type + '_' + str(expt_no) + '.pth.tar'
+    filename = '/Experiment/' + type + '_' + str(expt_no) + '.pth.tar'
     torch.save(state, filename)
     if is_best:
-        shutil.copyfile(filename, './ImageNet/Experiment/model_best' + type +
+        shutil.copyfile(filename, '/Experiment/model_best' + type +
                         '_' + str(expt_no) + '.pth.tar')
 
 

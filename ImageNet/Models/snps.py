@@ -52,7 +52,7 @@ def Net(pretrained=False, **kwargs):
 
     model = Net(**kwargs)
     if pretrained:
-        model_path = './ImageNet/Experiment/snps.pth.tar'
+        model_path = '/Experiment/snps.pth.tar'
         pretrained_model = torch.load(model_path)
         model.load_state_dict(pretrained_model['state_dict'])
     return model

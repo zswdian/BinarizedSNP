@@ -24,10 +24,10 @@ val_transform = transforms.Compose([
         normalize,
     ])
 
-train_set = datasets.ImageFolder(root='./ImageNet/Data/train', transform=train_transform)
+train_set = datasets.ImageFolder(root='Data/train', transform=train_transform)
 train_loader = torch.utils.data.DataLoader(train_set, batch_size=256,
                                            shuffle=True, num_workers=8, pin_memory=True)
 
-val_set = datasets.ImageFolder(root='./ImageNet/Data/val', transform=val_transform)
+val_set = datasets.ImageFolder(root='Data/val', transform=val_transform)
 val_loader = torch.utils.data.DataLoader(val_set, batch_size=256,
                                          shuffle=False, num_workers=8, pin_memory=True)

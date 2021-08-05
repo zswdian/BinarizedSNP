@@ -30,7 +30,7 @@ def save_state(expt_no, model, acc):
         if 'module' in key:
             state['state_dict'][key.replace('module.', '')] = \
                 state['state_dict'].pop(key)
-    torch.save(state, './CIFAR10/Experiment/' + type + '_' + str(expt_no) + '.pth.tar')
+    torch.save(state, 'Experiment/' + type + '_' + str(expt_no) + '.pth.tar')
 
 
 def train(epoch, expt_no):
@@ -85,8 +85,9 @@ def test(expt_no):
 
     acc = 100. * correct / len(testloader.dataset)
 
-    best_acc = acc
-    save_state(expt_no, model, best_acc)
+    if best_acc < acc:
+        best_acc = acc
+        save_state(expt_no, model, best_acc)
 
     test_loss /= len(testloader.dataset)
 
@@ -148,7 +149,7 @@ if __name__ == '__main__':
     expt_num = int(args.expt_num)
     acc_list = []
 
-    filename = './CIFAR10/ExpData/' + '_' + type + '.txt'
+    filename = 'ExpData/' + '_' + type + '.txt'
 
     # start training
     for i in range(expt_num):
@@ -176,7 +177,7 @@ if __name__ == '__main__':
                     m.bias.data.zero_()
         else:
             print('==> Load pretrained model form', args.pretrained, '...')
-            pretrained_model = torch.load('./CIFAR10/Experiment/' + type + '.pth.tar')
+            pretrained_model = torch.load('Experiment/' + type + '.pth.tar')
             best_acc = pretrained_model['best_acc']
             best_acc_output = pretrained_model['best_acc_output']
             model.load_state_dict(pretrained_model['state_dict'])
