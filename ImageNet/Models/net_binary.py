@@ -1,6 +1,6 @@
 import torch.nn as nn
 import torch
-from CIFAR10.BinarizedModules import BinConv2d
+from BinarizedModules import BinConv2d
 
 
 class Net(nn.Module):
