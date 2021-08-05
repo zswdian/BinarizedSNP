@@ -1,13 +1,10 @@
 import torch
-import torchvision
 import torchvision.datasets as datasets
 import torchvision.transforms as transforms
 
 input_size = 227
 normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],
                                  std=[1. / 255., 1. / 255., 1. / 255.])
-
-torchvision.set_image_backend('accimage')
 
 train_transform = transforms.Compose([
         transforms.Resize((256, 256)),

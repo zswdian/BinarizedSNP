@@ -152,8 +152,6 @@ def main():
 
         cudnn.benchmark = True
 
-        torchvision.set_image_backend('accimage')
-
         train_loader = IMAGENET_Data.train_loader
         val_loader = IMAGENET_Data.val_loader
 
