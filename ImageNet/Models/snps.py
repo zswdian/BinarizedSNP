@@ -48,7 +48,7 @@ class Net(nn.Module):
         return x
 
 
-def Net(pretrained=False, **kwargs):
+def net(pretrained=False, **kwargs):
 
     model = Net(**kwargs)
     if pretrained:

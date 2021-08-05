@@ -104,14 +104,14 @@ def main():
         if args.arch == 'alexnet':
             if not args.full:
                 if not args.snps:
-                    model = net_binary.Net(pretrained=args.pretrained)
+                    model = net_binary.net(pretrained=args.pretrained)
                 else:
-                    model = snps_binary.Net(pretrained=args.pretrained)
+                    model = snps_binary.net(pretrained=args.pretrained)
             else:
                 if not args.snps:
-                    model = net.Net(pretrained=args.pretrained)
+                    model = net.net(pretrained=args.pretrained)
                 else:
-                    model = snps.Net(pretrained=args.pretrained)
+                    model = snps.net(pretrained=args.pretrained)
         else:
             raise Exception('Model not supported yet')
 
