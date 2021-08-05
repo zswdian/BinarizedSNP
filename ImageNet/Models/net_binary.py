@@ -1,4 +1,5 @@
 import torch.nn as nn
+import torch
 from BinarizedModules import BinConv2d
 
 
@@ -34,4 +35,11 @@ class Net(nn.Module):
         x = self.classifier(x)
         return x
 
+def Net(pretrained=False, **kwargs):
 
+    model = Net(**kwargs)
+    if pretrained:
+        model_path = './ImageNet/Experiment/net_bin.pth.tar'
+        pretrained_model = torch.load(model_path)
+        model.load_state_dict(pretrained_model['state_dict'])
+    return model

@@ -1,18 +1,33 @@
 import torch
+import torchvision
 import torchvision.datasets as datasets
 import torchvision.transforms as transforms
 
-transform = transforms.Compose([
-        transforms.Resize(299),
-        transforms.CenterCrop(299),
+input_size = 227
+normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],
+                                 std=[1. / 255., 1. / 255., 1. / 255.])
+
+torchvision.set_image_backend('accimage')
+
+train_transform = transforms.Compose([
+        transforms.Resize((256, 256)),
+        transforms.RandomCrop(input_size),
+        transforms.RandomHorizontalFlip(),
         transforms.ToTensor(),
-        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+        normalize,
     ])
 
-trainset = datasets.ImageFolder(root='./ImageNet/Data/train', transform=transform)
-trainloader = torch.utils.data.DataLoader(trainset, batch_size=128,
-                                          shuffle=True, num_workers=4)
+val_transform = transforms.Compose([
+        transforms.Resize((256, 256)),
+        transforms.CenterCrop(input_size),
+        transforms.ToTensor(),
+        normalize,
+    ])
 
-testset = datasets.ImageFolder(root='./ImageNet/Data/val', transform=transform)
-testloader = torch.utils.data.DataLoader(testset, batch_size=128,
-                                         shuffle=False, num_workers=4)
+train_set = datasets.ImageFolder(root='./ImageNet/Data/train', transform=train_transform)
+train_loader = torch.utils.data.DataLoader(train_set, batch_size=256,
+                                           shuffle=True, num_workers=8, pin_memory=True)
+
+val_set = datasets.ImageFolder(root='./ImageNet/Data/val', transform=val_transform)
+val_loader = torch.utils.data.DataLoader(val_set, batch_size=256,
+                                         shuffle=False, num_workers=8, pin_memory=True)
