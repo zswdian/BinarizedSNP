@@ -71,14 +71,13 @@ parser.add_argument('--snps', action='store_true',
 parser.add_argument('--expt_num', action='store', default=10,
                     help='the num of the experiment')
 
-best_prec1 = 0
-
 # define global bin_op
 bin_op = None
 
 
 def main():
     global args, best_prec1
+    global type
     args = parser.parse_args()
 
     epochs = int(args.epochs)
@@ -99,7 +98,13 @@ def main():
 
     filename = 'ExpData/' + '_' + type + '.txt'
 
+    torch.distributed.init_process_group(backend="nccl")
+
     for i in range(1, expt_num):
+
+        best_prec1 = 0
+        best_prec5 = 0
+
         # create model
         if args.arch == 'alexnet':
             if not args.full:
@@ -116,10 +121,10 @@ def main():
             raise Exception('Model not supported yet')
 
         if args.arch.startswith('alexnet') or args.arch.startswith('vgg'):
-            model.features = torch.nn.DataParallel(model.features)
             model.cuda()
+            model.features = torch.nn.parallel.DistributedDataParallel()
         else:
-            model = torch.nn.DataParallel(model).cuda()
+            model = torch.nn.parallel.DistributedDataParallel(model).cuda()
 
         # define loss function (criterion) and optimizer
         criterion = nn.CrossEntropyLoss().cuda()
@@ -238,7 +243,7 @@ def train(train_loader, model, criterion, optimizer, epoch, expt_no):
 
         # restore weights
         bin_op.restore()
-        bin_op.updateBinaryGradWeight()
+        bin_op.updateBinaryWeightGrad()
 
         optimizer.step()
 
@@ -306,10 +311,10 @@ def validate(val_loader, model, criterion):
 
 
 def save_checkpoint(state, is_best, expt_no):
-    filename = '/Experiment/' + type + '_' + str(expt_no) + '.pth.tar'
+    filename = 'Experiment/' + type + '_' + str(expt_no) + '.pth.tar'
     torch.save(state, filename)
     if is_best:
-        shutil.copyfile(filename, '/Experiment/model_best' + type +
+        shutil.copyfile(filename, 'Experiment/model_best' + type +
                         '_' + str(expt_no) + '.pth.tar')
 
 

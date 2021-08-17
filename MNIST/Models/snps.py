@@ -7,6 +7,7 @@ class Net(nn.Module):
         super(Net, self).__init__()
 
         self.features = nn.Sequential(
+            nn.BatchNorm2d(1, eps=1e-4, momentum=0.1, affine=True),
             nn.PReLU(),
             nn.Conv2d(1, 20, kernel_size=5, stride=1),
             nn.MaxPool2d(kernel_size=2, stride=2),
