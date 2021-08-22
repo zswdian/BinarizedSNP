@@ -70,7 +70,6 @@ parser.add_argument('--snps', action='store_true',
                     help='use snps model')
 parser.add_argument('--expt_num', action='store', default=10,
                     help='the num of the experiment')
-
 # define global bin_op
 bin_op = None
 
