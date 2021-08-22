@@ -5,11 +5,15 @@ from __future__ import print_function
 import torch
 import torch.nn as nn
 import torch.optim as optim
-from CIFAR10 import CIFAR_Data
-from CIFAR10.Models import net
-from CIFAR10.Models import net_binary
-from CIFAR10.Models import snps
-from CIFAR10.Models import snps_binary
+import CIFAR_Data
+from Models import net
+from Models import net_binary
+from Models import snp
+from Models import snp_binary
+from Models import resnet
+from Models import resnet_bin
+from Models import resnet_snp
+from Models import resnet_snp_bin
 import util
 import argparse
 from torch.autograd import Variable
@@ -118,11 +122,12 @@ if __name__ == '__main__':
                         help='the start range of epoch')
     parser.add_argument('--full', action='store_true',
                         help='use full-precision')
-    parser.add_argument('--snps', action='store_true',
-                        help='use snps model')
+    parser.add_argument('--snp', action='store_true',
+                        help='use snp model')
     parser.add_argument('--expt_num', action='store', default=10,
                         help='the num of the experiment')
-
+    parser.add_argument('--resnet', action='store_true',
+                        help='use resnet')
     args = parser.parse_args()
     print('==> Options:', args)
 
@@ -134,38 +139,61 @@ if __name__ == '__main__':
     trainloader = CIFAR_Data.trainloader
     testloader = CIFAR_Data.testloader
 
-    if args.full:
-        if not args.snps:
-            type = 'data'
+    if not args.resnet:
+        if args.full:
+            if not args.snp:
+                type = 'data'
+            else:
+                type = 'data_snp'
         else:
-            type = 'data_snps'
+            if not args.snp:
+                type = 'data_bin'
+            else:
+                type = 'data_snp_bin'
     else:
-        if not args.snps:
-            type = 'data_bin'
+        if args.full:
+            if not args.snp:
+                type = 'resnet_data'
+            else:
+                type = 'resnet_data_snp'
         else:
-            type = 'data_snps_bin'
+            if not args.snp:
+                type = 'resnet_data_bin'
+            else:
+                type = 'resnet_data_snp_bin'
 
     epochs = int(args.epochs)
     expt_num = int(args.expt_num)
     acc_list = []
 
-    filename = 'ExpData/' + '_' + type + '.txt'
+    filename = 'ExpData/' + type + '.txt'
 
     # start training
     for i in range(expt_num):
 
         # define the model
-
-        if not args.full:
-            if not args.snps:
-                model = net_binary.Net()
+        if not args.resnet:
+            if not args.full:
+                if not args.snp:
+                    model = net_binary.Net()
+                else:
+                    model = snp_binary.Net()
             else:
-                model = snps_binary.Net()
+                if not args.snp:
+                    model = net.Net()
+                else:
+                    model = snp.Net()
         else:
-            if not args.snps:
-                model = net.Net()
+            if not args.full:
+                if not args.snp:
+                    model = net_binary.Net()
+                else:
+                    model = snp_binary.Net()
             else:
-                model = snps.Net()
+                if not args.snp:
+                    model = resnet.ResNet18()
+                else:
+                    model = snp.Net()
 
         # initialize the model
         if not args.pretrained:
