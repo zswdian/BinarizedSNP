@@ -44,6 +44,7 @@ class Net(nn.Module):
         )
 
     def forward(self, x):
+        a = 1
         x = self.snps(x)
         x = x.view(x.size(0), 10)
         return x
