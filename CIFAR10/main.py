@@ -101,12 +101,12 @@ def test(expt_no):
     return
 
 
-def adjust_learning_rate(optimizer, epoch):
-    update_list = [120, 160, 180]
-    if epoch in update_list:
-        for param_group in optimizer.param_groups:
-            param_group['lr'] = param_group['lr'] * 0.1
-    return
+# def adjust_learning_rate(optimizer, epoch):
+#     update_list = [120, 160, 180]
+#     if epoch in update_list:
+#         for param_group in optimizer.param_groups:
+#             param_group['lr'] = param_group['lr'] * 0.1
+#     return
 
 
 if __name__ == '__main__':
@@ -214,8 +214,10 @@ if __name__ == '__main__':
         model = torch.nn.DataParallel(model, device_ids=range(torch.cuda.device_count()))
 
         # define solver and criterion
-        optimizer = optim.Adam(model.parameters(), lr=0.01, weight_decay=0.00001)
         criterion = nn.CrossEntropyLoss()
+        optimizer = optim.SGD(net.parameters(), lr=args.lr,
+                              momentum=0.9, weight_decay=5e-4)
+        scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=200)
 
         # define the binarization operator
         if not args.full:
@@ -229,9 +231,10 @@ if __name__ == '__main__':
         best_acc = 0
 
         for epoch in range(1, epochs + 1):
-            adjust_learning_rate(optimizer, epoch)
+            # adjust_learning_rate(optimizer, epoch)
             train(epoch, i + 1)
             test(i + 1)
+            scheduler.step()
 
         with open(filename, 'a') as f:
             f.write('Expt {}: Best Accuracy: {:.2f}%\n'.format(i + 1, best_acc))
