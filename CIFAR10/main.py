@@ -11,9 +11,9 @@ from Models import net_binary
 from Models import snp
 from Models import snp_binary
 from Models import resnet
-from Models import resnet_bin
-from Models import resnet_snp
-from Models import resnet_snp_bin
+# from Models import resnet_bin
+# from Models import resnet_snp
+# from Models import resnet_snp_bin
 import util
 import argparse
 from torch.autograd import Variable
@@ -101,12 +101,12 @@ def test(expt_no):
     return
 
 
-def adjust_learning_rate(optimizer, epoch):
-    update_list = [60, 80, 100, 120]
-    if epoch in update_list:
-        for param_group in optimizer.param_groups:
-            param_group['lr'] = param_group['lr'] * 0.1
-    return
+# def adjust_learning_rate(optimizer, epoch):
+#     update_list = [60, 80, 100, 120]
+#     if epoch in update_list:
+#         for param_group in optimizer.param_groups:
+#             param_group['lr'] = param_group['lr'] * 0.1
+#     return
 
 
 if __name__ == '__main__':
@@ -202,7 +202,7 @@ if __name__ == '__main__':
             for m in model.modules():
                 if isinstance(m, nn.Conv2d):
                     m.weight.data.normal_(0, 0.05)
-                    m.bias.data.zero_()
+                    # m.bias.data.zero_()
         else:
             print('==> Load pretrained model form', args.pretrained, '...')
             pretrained_model = torch.load('Experiment/' + type + '.pth.tar')
@@ -223,6 +223,7 @@ if __name__ == '__main__':
 
         optimizer = optim.Adam(params, lr=0.10, weight_decay=0.00001)
         criterion = nn.CrossEntropyLoss()
+        scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=200)
 
         # define the binarization operator
         if not args.full:
@@ -236,9 +237,10 @@ if __name__ == '__main__':
         best_acc = 0
 
         for epoch in range(1, epochs + 1):
-            adjust_learning_rate(optimizer, epoch)
+            # adjust_learning_rate(optimizer, epoch)
             train(epoch, i + 1)
             test(i + 1)
+            scheduler.step()
 
         with open(filename, 'a') as f:
             f.write('Expt {}: Best Accuracy: {:.2f}%\n'.format(i + 1, best_acc))
