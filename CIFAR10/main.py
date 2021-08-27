@@ -112,7 +112,7 @@ def test(expt_no):
 if __name__ == '__main__':
     # prepare the options
     parser = argparse.ArgumentParser()
-    parser.add_argument('--lr', action='store', default='0.01',
+    parser.add_argument('--lr', action='store', default='0.01', type=float,
                         help='the intial learning rate')
     parser.add_argument('--pretrained', action='store_true',
                         help='the path to the pretrained model')
@@ -215,7 +215,7 @@ if __name__ == '__main__':
 
         # define solver and criterion
         criterion = nn.CrossEntropyLoss()
-        optimizer = optim.SGD(net.parameters(), lr=args.lr,
+        optimizer = optim.SGD(model.parameters(), lr=args.lr,
                               momentum=0.9, weight_decay=5e-4)
         scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=200)
 

@@ -24,7 +24,7 @@ class Net(nn.Module):
             nn.PReLU(),
             nn.BatchNorm2d(192, eps=1e-4, momentum=0.1, affine=False),
             nn.Conv2d(192, 10, kernel_size=1, stride=1, padding=0),
-
+            nn.PReLU(),
             nn.AvgPool2d(kernel_size=8, stride=1, padding=0),
         )
 
