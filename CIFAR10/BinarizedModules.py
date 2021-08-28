@@ -56,6 +56,42 @@ class BinConv2d(nn.Module):
         return x
 
 
+class BinResNetConv2d(nn.Module):
+
+    def __init__(self, input_channels, output_channels, kernel_size=-1,
+                 stride=-1, padding=-1, groups=1, Linear=False, relu=True):
+        super(BinConv2d, self).__init__()
+        self.layer_type = 'BinConv2d'
+        self.kernel_size = kernel_size
+        self.stride = stride
+        self.padding = padding
+        self.groups = groups
+        self.Linear = Linear
+        self.relu = relu
+
+        if not self.Linear:
+            self.bn = nn.BatchNorm2d(input_channels, eps=1e-4, momentum=0.1, affine=True)
+            self.bn.weight.data = self.bn.weight.data.zero_().add(1.0)
+            self.conv = nn.Conv2d(input_channels, output_channels, kernel_size=kernel_size,
+                                  stride=stride, padding=padding, groups=groups)
+        else:
+            self.bn = nn.BatchNorm1d(input_channels, eps=1e-4, momentum=0.1, affine=True)
+            self.bn.weight.data = self.bn.weight.data.zero_().add(1.0)
+            self.linear = nn.Linear(input_channels, output_channels)
+        self.relu = nn.ReLU(inplace=True)
+
+    def forward(self, input):
+        x = BinActive()(input)
+        if not self.Linear:
+            x = self.conv(x)
+        else:
+            x = self.linear(x)
+        x = self.bn(x)
+        if self.relu:
+            x = self.relu(x)
+        return x
+
+
 class BinSNPSConv2d(nn.Module):
 
     def __init__(self, input_channels, output_channels, kernel_size=-1,
