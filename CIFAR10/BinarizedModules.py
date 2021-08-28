@@ -59,13 +59,14 @@ class BinConv2d(nn.Module):
 class BinResNetConv2d(nn.Module):
 
     def __init__(self, input_channels, output_channels, kernel_size=-1,
-                 stride=-1, padding=-1, groups=1, Linear=False, relu=True):
+                 stride=-1, padding=-1, groups=1, bias=False, Linear=False, relu=True):
         super(BinConv2d, self).__init__()
         self.layer_type = 'BinConv2d'
         self.kernel_size = kernel_size
         self.stride = stride
         self.padding = padding
         self.groups = groups
+        self.bias = bias
         self.Linear = Linear
         self.relu = relu
 
@@ -73,7 +74,7 @@ class BinResNetConv2d(nn.Module):
             self.bn = nn.BatchNorm2d(input_channels, eps=1e-4, momentum=0.1, affine=True)
             self.bn.weight.data = self.bn.weight.data.zero_().add(1.0)
             self.conv = nn.Conv2d(input_channels, output_channels, kernel_size=kernel_size,
-                                  stride=stride, padding=padding, groups=groups)
+                                  stride=stride, padding=padding, groups=groups, bias=bias)
         else:
             self.bn = nn.BatchNorm1d(input_channels, eps=1e-4, momentum=0.1, affine=True)
             self.bn.weight.data = self.bn.weight.data.zero_().add(1.0)
