@@ -60,8 +60,8 @@ class BinResNetConv2d(nn.Module):
 
     def __init__(self, input_channels, output_channels, kernel_size=-1,
                  stride=-1, padding=-1, groups=1, bias=False, Linear=False, relu=True):
-        super(BinConv2d, self).__init__()
-        self.layer_type = 'BinConv2d'
+        super(BinResNetConv2d, self).__init__()
+        self.layer_type = 'BinResNetConv2d'
         self.kernel_size = kernel_size
         self.stride = stride
         self.padding = padding
