@@ -71,10 +71,10 @@ class BinResNetConv2d(nn.Module):
         self.relu = relu
 
         if not self.Linear:
-            self.bn = nn.BatchNorm2d(input_channels, eps=1e-4, momentum=0.1, affine=True)
+            self.bn = nn.BatchNorm2d(input_channels)
             self.bn.weight.data = self.bn.weight.data.zero_().add(1.0)
             self.conv = nn.Conv2d(input_channels, output_channels, kernel_size=kernel_size,
-                                  stride=stride, padding=padding, groups=groups, bias=bias)
+                                  stride=stride, padding=padding, bias=bias)
         else:
             self.bn = nn.BatchNorm1d(input_channels, eps=1e-4, momentum=0.1, affine=True)
             self.bn.weight.data = self.bn.weight.data.zero_().add(1.0)
