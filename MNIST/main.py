@@ -8,8 +8,8 @@ import torch.optim as optim
 from MNIST import MNIST_Data
 from MNIST.Models import net
 from MNIST.Models import net_binary
-from MNIST.Models import snps
-from MNIST.Models import snps_binary
+from MNIST.Models import snp
+from MNIST.Models import snp_binary
 import util
 import argparse
 from torch.autograd import Variable
@@ -160,12 +160,12 @@ if __name__ == '__main__':
             if not args.snps:
                 model = net_binary.Net()
             else:
-                model = snps_binary.Net()
+                model = snp_binary.Net()
         else:
             if not args.snps:
                 model = net.Net()
             else:
-                model = snps.Net()
+                model = snp.Net()
 
         # initialize the model
         if not args.pretrained:

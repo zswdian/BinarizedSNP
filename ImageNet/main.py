@@ -17,8 +17,8 @@ import torch.utils.data.distributed
 import IMAGENET_Data
 from Models import net
 from Models import net_binary
-from Models import snps
-from Models import snps_binary
+from Models import snp
+from Models import snp_binary
 import util
 import numpy as np
 
@@ -110,12 +110,12 @@ def main():
                 if not args.snps:
                     model = net_binary.net(pretrained=args.pretrained)
                 else:
-                    model = snps_binary.net(pretrained=args.pretrained)
+                    model = snp_binary.net(pretrained=args.pretrained)
             else:
                 if not args.snps:
                     model = net.net(pretrained=args.pretrained)
                 else:
-                    model = snps.net(pretrained=args.pretrained)
+                    model = snp.net(pretrained=args.pretrained)
         else:
             raise Exception('Model not supported yet')
 

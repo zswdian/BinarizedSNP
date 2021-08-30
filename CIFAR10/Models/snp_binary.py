@@ -1,5 +1,5 @@
 import torch.nn as nn
-from BinarizedModules import BinSNPSConv2d
+from BinarizedModules import BinSNPConv2d
 
 
 class Net(nn.Module):
@@ -10,17 +10,17 @@ class Net(nn.Module):
             nn.PReLU(),
             nn.BatchNorm2d(3, eps=1e-4, momentum=0.1, affine=False),
             nn.Conv2d(3, 192, kernel_size=5, stride=1, padding=2),
-            BinSNPSConv2d(192, 160, kernel_size=1, stride=1, padding=0),
-            BinSNPSConv2d(160, 96, kernel_size=1, stride=1, padding=0),
+            BinSNPConv2d(192, 160, kernel_size=1, stride=1, padding=0),
+            BinSNPConv2d(160, 96, kernel_size=1, stride=1, padding=0),
             nn.MaxPool2d(kernel_size=3, stride=2, padding=1),
 
-            BinSNPSConv2d(96, 192, kernel_size=5, stride=1, padding=2, dropout=0.5),
-            BinSNPSConv2d(192, 192, kernel_size=1, stride=1, padding=0),
-            BinSNPSConv2d(192, 192, kernel_size=1, stride=1, padding=0),
+            BinSNPConv2d(96, 192, kernel_size=5, stride=1, padding=2, dropout=0.5),
+            BinSNPConv2d(192, 192, kernel_size=1, stride=1, padding=0),
+            BinSNPConv2d(192, 192, kernel_size=1, stride=1, padding=0),
             nn.AvgPool2d(kernel_size=3, stride=2, padding=1),
 
-            BinSNPSConv2d(192, 192, kernel_size=3, stride=1, padding=1, dropout=0.5),
-            BinSNPSConv2d(192, 192, kernel_size=1, stride=1, padding=0),
+            BinSNPConv2d(192, 192, kernel_size=3, stride=1, padding=1, dropout=0.5),
+            BinSNPConv2d(192, 192, kernel_size=1, stride=1, padding=0),
             nn.PReLU(),
             nn.BatchNorm2d(192, eps=1e-4, momentum=0.1, affine=False),
             nn.Conv2d(192, 10, kernel_size=1, stride=1, padding=0),

@@ -18,8 +18,8 @@ class BinActive(torch.autograd.Function):
 
 class BinConv2d(nn.Module):
 
-    def __init__(self, input_channels, output_channels, kernel_size=-1,
-                 stride=-1, padding=-1, dropout=0, groups=1, Linear=False):
+    def __init__(self, input_channels, output_channels, kernel_size=1,
+                 stride=1, padding=1, dropout=0, groups=1, Linear=False):
         super(BinConv2d, self).__init__()
         self.layer_type = 'BinConv2d'
         self.kernel_size = kernel_size
@@ -58,8 +58,8 @@ class BinConv2d(nn.Module):
 
 class BinResNetConv2d(nn.Module):
 
-    def __init__(self, input_channels, output_channels, kernel_size=-1,
-                 stride=-1, padding=-1, groups=1, bias=False, relu=True):
+    def __init__(self, input_channels, output_channels, kernel_size=1,
+                 stride=1, padding=1, groups=1, bias=False, relu=True):
         super(BinResNetConv2d, self).__init__()
         self.layer_type = 'BinResNetConv2d'
         self.kernel_size = kernel_size
@@ -84,11 +84,11 @@ class BinResNetConv2d(nn.Module):
         return x
 
 
-class BinSNPSConv2d(nn.Module):
+class BinSNPConv2d(nn.Module):
 
-    def __init__(self, input_channels, output_channels, kernel_size=-1,
-                 stride=-1, padding=-1, dropout=0, groups=1, Linear=False):
-        super(BinSNPSConv2d, self).__init__()
+    def __init__(self, input_channels, output_channels, kernel_size=1,
+                 stride=1, padding=1, dropout=0, groups=1, Linear=False):
+        super(BinSNPConv2d, self).__init__()
         self.layer_type = 'BinSNPSConv2d'
         self.kernel_size = kernel_size
         self.stride = stride
@@ -121,4 +121,31 @@ class BinSNPSConv2d(nn.Module):
             x = self.conv(x)
         else:
             x = self.linear(x)
+        return x
+
+
+class BinResNetSNPConv2d(nn.Module):
+
+    def __init__(self, input_channels, output_channels, kernel_size=1,
+                 stride=1, padding=1, groups=1, bias=False):
+        super(BinResNetSNPConv2d, self).__init__()
+        self.layer_type = 'BinSNPSConv2d'
+        self.kernel_size = kernel_size
+        self.stride = stride
+        self.padding = padding
+        self.groups = groups
+        self.bias = bias
+
+        self.bn = nn.BatchNorm2d(input_channels, eps=1e-4, momentum=0.1, affine=True)
+        self.bn.weight.data = self.bn.weight.data.zero_().add(1.0)
+        self.conv = nn.Conv2d(input_channels, output_channels, kernel_size=kernel_size,
+                              stride=stride, padding=padding, groups=groups, bias=bias)
+
+        self.pRelu = nn.PReLU()
+
+    def forward(self, input):
+        x = self.pRelu(input)
+        x = self.bn(x)
+        x = BinActive()(x)
+        x = self.conv(x)
         return x

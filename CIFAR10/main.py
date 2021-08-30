@@ -11,9 +11,9 @@ from Models import net_binary
 from Models import snp
 from Models import snp_binary
 from Models import resnet
-# from Models import resnet_bin
-# from Models import resnet_snp
-# from Models import resnet_snp_bin
+from Models import resnet_bin
+from Models import resnet_snp
+from Models import resnet_snp_bin
 import util
 import argparse
 from torch.autograd import Variable
@@ -186,14 +186,14 @@ if __name__ == '__main__':
         else:
             if not args.full:
                 if not args.snp:
-                    model = net_binary.Net()
+                    model = resnet_bin.ResNet18()
                 else:
-                    model = snp_binary.Net()
+                    model = resnet_snp_bin.ResNet18()
             else:
                 if not args.snp:
                     model = resnet.ResNet18()
                 else:
-                    model = snp.Net()
+                    model = resnet_snp.ResNet18()
 
         # initialize the model
         if not args.pretrained:
