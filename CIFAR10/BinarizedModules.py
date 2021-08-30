@@ -136,7 +136,7 @@ class BinResNetSNPConv2d(nn.Module):
         self.groups = groups
         self.bias = bias
 
-        self.bn = nn.BatchNorm2d(input_channels, eps=1e-4, momentum=0.1, affine=True)
+        self.bn = nn.BatchNorm2d(input_channels)
         self.bn.weight.data = self.bn.weight.data.zero_().add(1.0)
         self.conv = nn.Conv2d(input_channels, output_channels, kernel_size=kernel_size,
                               stride=stride, padding=padding, groups=groups, bias=bias)
