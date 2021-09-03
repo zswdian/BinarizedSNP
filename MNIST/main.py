@@ -138,18 +138,18 @@ if __name__ == '__main__':
         if not args.snp:
             type = 'data'
         else:
-            type = 'data_snps'
+            type = 'data_snp'
     else:
         if not args.snp:
             type = 'data_bin'
         else:
-            type = 'data_snps_bin'
+            type = 'data_snp_bin'
 
     epochs = int(args.epochs)
     expt_num = int(args.expt_num)
     acc_list = []
 
-    filename = 'ExpData/' + '_' + type + '.txt'
+    filename = 'ExpData/' + type + '.txt'
 
     # start training
     for i in range(expt_num):
