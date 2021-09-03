@@ -98,11 +98,11 @@ def test(expt_no):
 
 
 def adjust_learning_rate(optimizer, epoch):
-    lr = args.lr * (0.1 ** (epoch // 15))
-    print('Learning rate:', lr)
-    for param_group in optimizer.param_groups:
-        param_group['lr'] = lr
-    return lr
+    update_list = [15, 30, 45]
+    if epoch in update_list:
+        for param_group in optimizer.param_groups:
+            param_group['lr'] = param_group['lr'] * 0.1
+    return
 
 
 if __name__ == '__main__':
@@ -118,8 +118,8 @@ if __name__ == '__main__':
                         help='the start range of epoch')
     parser.add_argument('--full', action='store_true',
                         help='use full-precision')
-    parser.add_argument('--snps', action='store_true',
-                        help='use snps model')
+    parser.add_argument('--snp', action='store_true',
+                        help='use snp model')
     parser.add_argument('--expt_num', action='store', default=10,
                         help='the num of the experiment')
 
@@ -135,12 +135,12 @@ if __name__ == '__main__':
     testloader = MNIST_Data.testloader
 
     if args.full:
-        if not args.snps:
+        if not args.snp:
             type = 'data'
         else:
             type = 'data_snps'
     else:
-        if not args.snps:
+        if not args.snp:
             type = 'data_bin'
         else:
             type = 'data_snps_bin'
@@ -157,12 +157,12 @@ if __name__ == '__main__':
         # define the model
 
         if not args.full:
-            if not args.snps:
+            if not args.snp:
                 model = net_binary.Net()
             else:
                 model = snp_binary.Net()
         else:
-            if not args.snps:
+            if not args.snp:
                 model = net.Net()
             else:
                 model = snp.Net()
