@@ -9,18 +9,18 @@ class Net(nn.Module):
         self.features = nn.Sequential(
             nn.Conv2d(1, 20, kernel_size=5, stride=1),
             nn.BatchNorm2d(20, eps=1e-4, momentum=0.1, affine=False),
-            nn.PReLU(),
+            nn.ReLU(inplace=True),
             nn.MaxPool2d(kernel_size=2, stride=2),
             nn.BatchNorm2d(20, eps=1e-4, momentum=0.1, affine=True),
             nn.Conv2d(20, 50, kernel_size=5, stride=1, padding=0),
-            nn.PReLU(),
+            nn.ReLU(inplace=True),
             nn.MaxPool2d(kernel_size=2, stride=2),
             nn.BatchNorm2d(50, eps=1e-4, momentum=0.1, affine=True),
         )
 
         self.classifier = nn.Sequential(
             nn.Linear(50 * 4 * 4, 500),
-            nn.PReLU(),
+            nn.ReLU(inplace=True),
             nn.Linear(500, 10),
         )
 
