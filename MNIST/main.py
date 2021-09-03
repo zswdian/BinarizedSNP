@@ -98,11 +98,11 @@ def test(expt_no):
 
 
 def adjust_learning_rate(optimizer, epoch):
-    update_list = [60, 80, 100, 120]
-    if epoch in update_list:
-        for param_group in optimizer.param_groups:
-            param_group['lr'] = param_group['lr'] * 0.1
-    return
+    lr = args.lr * (0.1 ** (epoch // 15))
+    print('Learning rate:', lr)
+    for param_group in optimizer.param_groups:
+        param_group['lr'] = lr
+    return lr
 
 
 if __name__ == '__main__':
