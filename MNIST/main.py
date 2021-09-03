@@ -5,11 +5,11 @@ from __future__ import print_function
 import torch
 import torch.nn as nn
 import torch.optim as optim
-from MNIST import MNIST_Data
-from MNIST.Models import net
-from MNIST.Models import net_binary
-from MNIST.Models import snp
-from MNIST.Models import snp_binary
+import MNIST_Data
+from Models import net
+from Models import net_binary
+from Models import snp
+from Models import snp_binary
 import util
 import argparse
 from torch.autograd import Variable
