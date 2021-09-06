@@ -69,11 +69,11 @@ class ResNet(nn.Module):
 
         self.conv1 = nn.Conv2d(3, 64, kernel_size=3,
                                stride=1, padding=1, bias=False)
-        self.bn1 = nn.BatchNorm2d(3)
         self.layer1 = self._make_layer(block, 64, num_blocks[0], stride=1)
         self.layer2 = self._make_layer(block, 128, num_blocks[1], stride=2)
         self.layer3 = self._make_layer(block, 256, num_blocks[2], stride=2)
         self.layer4 = self._make_layer(block, 512, num_blocks[3], stride=2)
+        self.bn1 = nn.BatchNorm2d(512)
         self.linear = nn.Linear(512*block.expansion, num_classes)
         self.prelu = nn.PReLU()
 
@@ -86,11 +86,12 @@ class ResNet(nn.Module):
         return nn.Sequential(*layers)
 
     def forward(self, x):
-        out = self.conv1(self.bn1(self.prelu(x)))
+        out = self.conv1(self.prelu(x))
         out = self.layer1(out)
         out = self.layer2(out)
         out = self.layer3(out)
         out = self.layer4(out)
+        out = self.bn1(out)
         out = self.prelu(out)
         out = F.avg_pool2d(out, 4)
         out = out.view(out.size(0), -1)
