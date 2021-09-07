@@ -223,6 +223,7 @@ if __name__ == '__main__':
                         'weight_decay': 0.00001}]
 
         optimizer = optim.Adam(params, lr=0.10, weight_decay=0.00001)
+        criterion = nn.CrossEntropyLoss()
         # scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=200)
 
         # define the binarization operator
