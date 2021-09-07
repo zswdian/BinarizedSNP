@@ -214,9 +214,15 @@ if __name__ == '__main__':
         model = torch.nn.DataParallel(model, device_ids=range(torch.cuda.device_count()))
 
         # define solver and criterion
-        criterion = nn.CrossEntropyLoss()
-        optimizer = optim.SGD(model.parameters(), lr=args.lr,
-                              momentum=0.9, weight_decay=5e-4)
+        base_lr = float(args.lr)
+        param_dict = dict(model.named_parameters())
+        params = []
+
+        for key, value in param_dict.items():
+            params += [{'params': [value], 'lr': base_lr,
+                        'weight_decay': 0.00001}]
+
+        optimizer = optim.Adam(params, lr=0.10, weight_decay=0.00001)
         # scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=200)
 
         # define the binarization operator
