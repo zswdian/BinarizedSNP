@@ -102,17 +102,17 @@ def test(expt_no):
 
 
 def adjust_learning_rate(optimizer, epoch):
-    update_list = [120, 200, 240, 280]
-    if epoch in update_list:
-        for param_group in optimizer.param_groups:
-            param_group['lr'] = param_group['lr'] * 0.1
+    # update_list = [120, 200, 240, 280]
+    # if epoch in update_list:
+    for param_group in optimizer.param_groups:
+        param_group['lr'] = param_group['lr'] * (1 / (1 + 0.01*epoch))
     return
 
 
 if __name__ == '__main__':
     # prepare the options
     parser = argparse.ArgumentParser()
-    parser.add_argument('--lr', action='store', default='0.01', type=float,
+    parser.add_argument('--lr', action='store', default='0.1', type=float,
                         help='the intial learning rate')
     parser.add_argument('--pretrained', action='store_true',
                         help='the path to the pretrained model')

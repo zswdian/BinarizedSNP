@@ -9,7 +9,7 @@ class Net(nn.Module):
         self.xnor = nn.Sequential(
             nn.Conv2d(3, 192, kernel_size=5, stride=1, padding=2),
             nn.BatchNorm2d(192, eps=1e-4, momentum=0.1, affine=False),
-            nn.PReLU(),
+            nn.ReLU(inplace=True),
             BinConv2d(192, 160, kernel_size=1, stride=1, padding=0),
             BinConv2d(160, 96, kernel_size=1, stride=1, padding=0),
             nn.MaxPool2d(kernel_size=3, stride=2, padding=1),
@@ -23,7 +23,7 @@ class Net(nn.Module):
             BinConv2d(192, 192, kernel_size=1, stride=1, padding=0),
             nn.BatchNorm2d(192, eps=1e-4, momentum=0.1, affine=False),
             nn.Conv2d(192, 10, kernel_size=1, stride=1, padding=0),
-            nn.PReLU(),
+            nn.ReLU(inplace=True),
             nn.AvgPool2d(kernel_size=8, stride=1, padding=0),
         )
 
