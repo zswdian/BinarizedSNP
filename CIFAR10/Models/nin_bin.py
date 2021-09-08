@@ -6,7 +6,7 @@ class Net(nn.Module):
 
     def __init__(self):
         super(Net, self).__init__()
-        self.xnor = nn.Sequential(
+        self.classifier = nn.Sequential(
             nn.Conv2d(3, 192, kernel_size=5, stride=1, padding=2),
             nn.BatchNorm2d(192, eps=1e-4, momentum=0.1, affine=False),
             nn.ReLU(inplace=True),
@@ -28,7 +28,7 @@ class Net(nn.Module):
         )
 
     def forward(self, x):
-        x = self.xnor(x)
+        x = self.classifier(x)
         x = x.view(x.size(0), 10)
         return x
 
