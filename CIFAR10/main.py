@@ -113,7 +113,7 @@ def adjust_learning_rate(optimizer, epoch):
 if __name__ == '__main__':
     # prepare the options
     parser = argparse.ArgumentParser()
-    parser.add_argument('--lr', action='store', default='0.1', type=float,
+    parser.add_argument('--lr', action='store', default='0.01', type=float,
                         help='the intial learning rate')
     parser.add_argument('--pretrained', action='store_true',
                         help='the path to the pretrained model')
@@ -223,7 +223,7 @@ if __name__ == '__main__':
             params += [{'params': [value], 'lr': base_lr,
                         'weight_decay': 0.00001}]
 
-        optimizer = optim.Adam(params, lr=0.10, weight_decay=0.00001)
+        optimizer = optim.Adam(params, lr=0.01, weight_decay=0.00001)
         criterion = nn.CrossEntropyLoss()
         # scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=200)
 
