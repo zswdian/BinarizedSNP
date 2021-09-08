@@ -7,8 +7,8 @@ import torch.nn as nn
 import torch.optim as optim
 import CIFAR_Data
 from Models import nin
-from Models import net_binary
-from Models import snp
+from Models import nin_bin
+from Models import nin_snp
 from Models import snp_binary
 from Models import resnet
 from Models import resnet_bin
@@ -101,15 +101,6 @@ def test(expt_no):
     return
 
 
-# def adjust_learning_rate(optimizer, epoch):
-#     # update_list = [120, 200, 240, 280]
-#     # if epoch in update_list:
-#     if epoch % 4 == 0:
-#         for param_group in optimizer.param_groups:
-#             param_group['lr'] = param_group['lr'] * (1 / (1 + 0.01*epoch))
-#     return
-
-
 if __name__ == '__main__':
     # prepare the options
     parser = argparse.ArgumentParser()
@@ -145,10 +136,10 @@ if __name__ == '__main__':
             if not args.snp:
                 type = 'nin'
             else:
-                type = 'data_snp'
+                type = 'nin_snp'
         else:
             if not args.snp:
-                type = 'data_bin'
+                type = 'nin_bin'
             else:
                 type = 'data_snp_bin'
     else:
@@ -176,14 +167,14 @@ if __name__ == '__main__':
         if not args.resnet:
             if not args.full:
                 if not args.snp:
-                    model = net_binary.Net()
+                    model = nin_bin.Net()
                 else:
                     model = snp_binary.Net()
             else:
                 if not args.snp:
                     model = nin.Net()
                 else:
-                    model = snp.Net()
+                    model = nin_snp.Net()
         else:
             if not args.full:
                 if not args.snp:
@@ -215,17 +206,11 @@ if __name__ == '__main__':
         model = torch.nn.DataParallel(model, device_ids=range(torch.cuda.device_count()))
 
         # define solver and criterion
-        # base_lr = float(args.lr)
-        # param_dict = dict(model.named_parameters())
-        # params = []
-        #
-        # for key, value in param_dict.items():
-        #     params += [{'params': [value], 'lr': base_lr,
-        #                 'weight_decay': 0.00001}]
-
-        # optimizer = optim.Adam(params, lr=0.01, weight_decay=0.00001)
         optimizer = optim.SGD(model.parameters(), lr=args.lr,
                               momentum=0.9, weight_decay=5e-4)
+        # BIN
+        # optimizer = optim.Adam(model.parameters(), lr=args.lr,
+        #                        weight_decay=0.00001)
         criterion = nn.CrossEntropyLoss()
         scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=200)
 
@@ -241,7 +226,6 @@ if __name__ == '__main__':
         best_acc = 0
 
         for epoch in range(1, epochs + 1):
-            # adjust_learning_rate(optimizer, epoch)
             train(epoch, i + 1)
             test(i + 1)
             scheduler.step()
