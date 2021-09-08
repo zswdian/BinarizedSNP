@@ -109,10 +109,10 @@ class BinSNPConv2d(nn.Module):
             self.bn = nn.BatchNorm1d(input_channels, eps=1e-4, momentum=0.1, affine=True)
             self.bn.weight.data = self.bn.weight.data.zero_().add(1.0)
             self.linear = nn.Linear(input_channels, output_channels)
-        self.pRelu = nn.PReLU()
+        self.relu = nn.ReLU(inplace=True)
 
     def forward(self, input):
-        x = self.pRelu(input)
+        x = self.relu(input)
         x = self.bn(x)
         x = BinActive()(x)
         if self.dropout_ratio != 0:
