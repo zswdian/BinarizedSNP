@@ -43,7 +43,7 @@ class Net(nn.Module):
             nn.Conv2d(192, 192, kernel_size=1, stride=1, padding=0),
 
             nn.PReLU(),
-            nn.BatchNorm2d(10),
+            nn.BatchNorm2d(192),
             nn.Conv2d(192, 10, kernel_size=1, stride=1, padding=0),
             nn.BatchNorm2d(10),
             nn.PReLU(),
