@@ -9,6 +9,7 @@ import CIFAR_Data
 from Models import nin
 from Models import nin_bin
 from Models import nin_snp
+from Models import nin_snp_2
 from Models import nin_snp_bin
 from Models import resnet
 from Models import resnet_bin
@@ -136,7 +137,7 @@ if __name__ == '__main__':
             if not args.snp:
                 type = 'nin'
             else:
-                type = 'nin_snp'
+                type = 'nin_snp_2'
         else:
             if not args.snp:
                 type = 'nin_bin'
@@ -174,7 +175,7 @@ if __name__ == '__main__':
                 if not args.snp:
                     model = nin.Net()
                 else:
-                    model = nin_snp.Net()
+                    model = nin_snp_2.Net()
         else:
             if not args.full:
                 if not args.snp:
