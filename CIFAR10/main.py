@@ -14,6 +14,7 @@ from Models import resnet
 from Models import resnet_bin
 from Models import resnet_snp
 from Models import resnet_snp_bin
+from Models import vgg
 import util
 import argparse
 from torch.autograd import Variable
@@ -120,6 +121,10 @@ if __name__ == '__main__':
                         help='the num of the experiment')
     parser.add_argument('--resnet', action='store_true',
                         help='use resnet')
+    parser.add_argument('--vgg', action='store_true',
+                        help='use vgg')
+    parser.add_argument('--nin', action='store_true',
+                        help='use nin')
     args = parser.parse_args()
     print('==> Options:', args)
 
@@ -131,7 +136,7 @@ if __name__ == '__main__':
     trainloader = CIFAR_Data.trainloader
     testloader = CIFAR_Data.testloader
 
-    if not args.resnet:
+    if args.nin:
         if args.full:
             if not args.snp:
                 type = 'nin'
@@ -142,7 +147,7 @@ if __name__ == '__main__':
                 type = 'nin_bin'
             else:
                 type = 'nin_snp_bin'
-    else:
+    elif args.resnet:
         if args.full:
             if not args.snp:
                 type = 'resnet_data'
@@ -153,6 +158,17 @@ if __name__ == '__main__':
                 type = 'resnet_data_bin'
             else:
                 type = 'resnet_data_snp_bin'
+    elif args.vgg:
+        if args.full:
+            if not args.snp:
+                type = 'vgg_data'
+            else:
+                type = 'vgg_data_snp'
+        else:
+            if not args.snp:
+                type = 'vgg_data_bin'
+            else:
+                type = 'vgg_data_snp_bin'
 
     epochs = int(args.epochs)
     expt_num = int(args.expt_num)
@@ -164,7 +180,7 @@ if __name__ == '__main__':
     for i in range(expt_num):
 
         # define the model
-        if not args.resnet:
+        if args.nin:
             if not args.full:
                 if not args.snp:
                     model = nin_bin.Net()
@@ -175,7 +191,7 @@ if __name__ == '__main__':
                     model = nin.Net()
                 else:
                     model = nin_snp.Net()
-        else:
+        elif args.resnet:
             if not args.full:
                 if not args.snp:
                     model = resnet_bin.ResNet18()
@@ -184,6 +200,17 @@ if __name__ == '__main__':
             else:
                 if not args.snp:
                     model = resnet.ResNet18()
+                else:
+                    model = resnet_snp.ResNet18()
+        elif args.vgg:
+            if not args.full:
+                if not args.snp:
+                    model = resnet_bin.ResNet18()
+                else:
+                    model = resnet_snp_bin.ResNet18()
+            else:
+                if not args.snp:
+                    model = vgg.VGG('VGG11')
                 else:
                     model = resnet_snp.ResNet18()
 
