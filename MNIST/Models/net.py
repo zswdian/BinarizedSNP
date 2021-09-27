@@ -11,11 +11,10 @@ class Net(nn.Module):
             nn.BatchNorm2d(20, eps=1e-4, momentum=0.1, affine=False),
             nn.ReLU(inplace=True),
             nn.MaxPool2d(kernel_size=2, stride=2),
-            nn.BatchNorm2d(20, eps=1e-4, momentum=0.1, affine=True),
             nn.Conv2d(20, 50, kernel_size=5, stride=1, padding=0),
+            nn.BatchNorm2d(50, eps=1e-4, momentum=0.1, affine=True),
             nn.ReLU(inplace=True),
             nn.MaxPool2d(kernel_size=2, stride=2),
-            nn.BatchNorm2d(50, eps=1e-4, momentum=0.1, affine=True),
         )
 
         self.classifier = nn.Sequential(
