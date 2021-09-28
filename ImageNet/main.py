@@ -9,7 +9,7 @@ import torch.nn as nn
 import torch.nn.parallel
 import torch.backends.cudnn as cudnn
 import torch.distributed as dist
-import torch.optim
+import torch.optim as optim
 import torch.utils.data
 import torch.utils.data.distributed
 # import torchvision.transforms as transforms
@@ -66,10 +66,12 @@ parser.add_argument('--dist-backend', default='gloo', type=str,
                     help='distributed backend')
 parser.add_argument('--full', action='store_true',
                     help='use full-precision')
-parser.add_argument('--snps', action='store_true',
-                    help='use snps model')
+parser.add_argument('--snp', action='store_true',
+                    help='use snp model')
 parser.add_argument('--expt_num', action='store', default=10,
                     help='the num of the experiment')
+parser.add_argument('--alexnet', action='store_true',
+                    help='use alexnet')
 # define global bin_op
 bin_op = None
 
@@ -85,17 +87,17 @@ def main():
     acc_list_5 = []
 
     if args.full:
-        if not args.snps:
-            type = 'data'
+        if not args.snp:
+            type = 'alexnet'
         else:
-            type = 'data_snps'
+            type = 'alexnet_snp'
     else:
-        if not args.snps:
-            type = 'data_bin'
+        if not args.snp:
+            type = 'alexnet_bin'
         else:
-            type = 'data_snps_bin'
+            type = 'alexnet_snp_bin'
 
-    filename = 'ExpData/' + '_' + type + '.txt'
+    filename = 'ExpData/' + type + '.txt'
 
     torch.distributed.init_process_group(backend="nccl")
 
@@ -107,12 +109,12 @@ def main():
         # create model
         if args.arch == 'alexnet':
             if not args.full:
-                if not args.snps:
+                if not args.snp:
                     model = net_binary.net(pretrained=args.pretrained)
                 else:
                     model = snp_binary.net(pretrained=args.pretrained)
             else:
-                if not args.snps:
+                if not args.snp:
                     model = net.net(pretrained=args.pretrained)
                 else:
                     model = snp.net(pretrained=args.pretrained)
@@ -126,10 +128,13 @@ def main():
             model = torch.nn.parallel.DistributedDataParallel(model).cuda()
 
         # define loss function (criterion) and optimizer
-        criterion = nn.CrossEntropyLoss().cuda()
-
-        optimizer = torch.optim.Adam(model.parameters(), args.lr,
-                                     weight_decay=args.weight_decay)
+        optimizer = optim.SGD(model.parameters(), lr=args.lr,
+                              momentum=0.9, weight_decay=5e-4)
+        # BIN
+        # optimizer = optim.Adam(model.parameters(), lr=args.lr,
+        #                        weight_decay=0.00001)
+        criterion = nn.CrossEntropyLoss()
+        scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=epochs)
 
         for m in model.modules():
             if isinstance(m, nn.Conv2d) or isinstance(m, nn.Linear):
@@ -170,11 +175,9 @@ def main():
             return
 
         for epoch in range(1, epochs):
-            adjust_learning_rate(optimizer, epoch)
-
             # train for one epoch
             train(train_loader, model, criterion, optimizer, epoch, i)
-
+            scheduler.step()
             # evaluate on validation set
             prec1, prec5 = validate(val_loader, model, criterion)
 
@@ -334,15 +337,6 @@ class AverageMeter(object):
         self.sum += val * n
         self.count += n
         self.avg = self.sum / self.count
-
-
-def adjust_learning_rate(optimizer, epoch):
-    """Sets the learning rate to the initial LR decayed by 10 every 30 epochs"""
-    lr = args.lr * (0.1 ** (epoch // 30))
-    print
-    'Learning rate:', lr
-    for param_group in optimizer.param_groups:
-        param_group['lr'] = lr
 
 
 def accuracy(output, target, topk=(1,)):
