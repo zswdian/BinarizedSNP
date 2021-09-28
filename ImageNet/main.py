@@ -15,7 +15,7 @@ import torch.utils.data.distributed
 # import torchvision.transforms as transforms
 # import torchvision.datasets as datasets
 import IMAGENET_Data
-from Models import net
+from Models import alexnet
 from Models import net_binary
 from Models import snp
 from Models import snp_binary
@@ -72,8 +72,7 @@ parser.add_argument('--expt_num', action='store', default=10,
                     help='the num of the experiment')
 parser.add_argument('--alexnet', action='store_true',
                     help='use alexnet')
-# define global bin_op
-bin_op = None
+global bin_op
 
 
 def main():
@@ -115,7 +114,7 @@ def main():
                     model = snp_binary.net(pretrained=args.pretrained)
             else:
                 if not args.snp:
-                    model = net.net(pretrained=args.pretrained)
+                    model = alexnet.net(pretrained=args.pretrained)
                 else:
                     model = snp.net(pretrained=args.pretrained)
         else:
@@ -167,8 +166,8 @@ def main():
         # print(model)
 
         # define the binarization operator
-        global bin_op
-        bin_op = util.BinOp(model)
+        if not args.full:
+            bin_op = util.BinOp(model)
 
         if args.evaluate:
             validate(val_loader, model, criterion)
@@ -227,7 +226,8 @@ def train(train_loader, model, criterion, optimizer, epoch, expt_no):
         target_var = torch.autograd.Variable(target)
 
         # process the weights including binarization
-        bin_op.binarization()
+        if not args.full:
+            bin_op.binarization()
 
         # compute output
         output = model(input_var)
@@ -244,8 +244,9 @@ def train(train_loader, model, criterion, optimizer, epoch, expt_no):
         loss.backward()
 
         # restore weights
-        bin_op.restore()
-        bin_op.updateBinaryWeightGrad()
+        if not args.full:
+            bin_op.restore()
+            bin_op.updateBinaryWeightGrad()
 
         optimizer.step()
 
@@ -275,7 +276,8 @@ def validate(val_loader, model, criterion):
     model.eval()
 
     end = time.time()
-    bin_op.binarization()
+    if not args.full:
+        bin_op.binarization()
     for i, (input, target) in enumerate(val_loader):
         target = target.cuda()
         with torch.no_grad():
@@ -304,7 +306,8 @@ def validate(val_loader, model, criterion):
                   'Prec@5 {top5.val:.3f} ({top5.avg:.3f})'.format(
                 i, len(val_loader), batch_time=batch_time, loss=losses,
                 top1=top1, top5=top5))
-    bin_op.restore()
+    if not args.full:
+        bin_op.restore()
 
     print(' * Prec@1 {top1.avg:.3f} Prec@5 {top5.avg:.3f}'
           .format(top1=top1, top5=top5))
