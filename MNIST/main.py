@@ -6,9 +6,9 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 import MNIST_Data
-from Models import net
+from Models import lenet
 from Models import net_binary
-from Models import snp
+from Models import lenet_snp
 from Models import snp_binary
 import util
 import argparse
@@ -155,9 +155,9 @@ if __name__ == '__main__':
                 model = snp_binary.Net()
         else:
             if not args.snp:
-                model = net.Net()
+                model = lenet.Net()
             else:
-                model = snp.Net()
+                model = lenet_snp.Net()
 
         # initialize the model
         if not args.pretrained:
