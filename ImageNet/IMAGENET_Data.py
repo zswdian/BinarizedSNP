@@ -4,7 +4,7 @@ import torchvision.transforms as transforms
 
 input_size = 227
 
-normalize = transforms.Normalize((0.4802, 0.4481, 0.3975), (0.2770, 0.2691, 0.2821))
+normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
 
 transform_train = transforms.Compose([
         transforms.Resize((256, 256)),
@@ -26,4 +26,4 @@ val_set = datasets.ImageFolder('Data/tiny-imagenet-200/val', transform=transform
 train_loader = torch.utils.data.DataLoader(train_set, batch_size=256,
                                            shuffle=True, num_workers=8, pin_memory=True)
 val_loader = torch.utils.data.DataLoader(val_set, batch_size=256,
-                                          shuffle=False, num_workers=8, pin_memory=True)
+                                         shuffle=False, num_workers=8, pin_memory=True)
