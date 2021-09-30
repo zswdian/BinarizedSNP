@@ -17,7 +17,7 @@ import torch.utils.data.distributed
 import IMAGENET_Data
 from Models import alexnet
 from Models import net_binary
-from Models import snp
+from Models import alexnet_snp
 from Models import snp_binary
 import util
 import numpy as np
@@ -116,7 +116,7 @@ def main():
                 if not args.snp:
                     model = alexnet.net(pretrained=args.pretrained)
                 else:
-                    model = snp.net(pretrained=args.pretrained)
+                    model = alexnet_snp.net(pretrained=args.pretrained)
         else:
             raise Exception('Model not supported yet')
 
