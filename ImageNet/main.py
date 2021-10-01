@@ -4,14 +4,10 @@ import shutil
 import time
 
 import torch
-import torchvision
 import torch.nn as nn
 import torch.nn.parallel
-import torch.backends.cudnn as cudnn
-import torch.distributed as dist
 import torch.optim as optim
 import torch.utils.data
-import torch.utils.data.distributed
 import IMAGENET_Data
 from Models import alexnet
 from Models import net_binary
@@ -180,8 +176,6 @@ def main():
             else:
                 print("=> no checkpoint found at '{}'".format(args.resume))
 
-        cudnn.benchmark = True
-
         train_loader = IMAGENET_Data.train_loader
         val_loader = IMAGENET_Data.val_loader
 
@@ -222,10 +216,10 @@ def main():
         acc_list_5.append(best_prec5)
 
     with open(filename, 'a') as f:
-        f.write('Mean@1: {}\n'.format(np.mean(acc_list)))
-        f.write('Var@1: {}'.format(np.var(acc_list)))
-        f.write('Mean@5: {}\n'.format(np.mean(acc_list_5)))
-        f.write('Var@5: {}'.format(np.var(acc_list_5)))
+        f.write('Mean@1: {}\n'.format(torch.mean(acc_list)))
+        f.write('Var@1: {}'.format(torch.var(acc_list)))
+        f.write('Mean@5: {}\n'.format(torch.mean(acc_list_5)))
+        f.write('Var@5: {}'.format(torch.var(acc_list_5)))
 
 
 def train(train_loader, model, criterion, optimizer, epoch, expt_no):
