@@ -15,7 +15,7 @@ from Models import alexnet_snp
 from Models import snp_binary
 from Models import resnet
 from Models import resnet_snp
-from MOdels import vgg
+from Models import vgg
 from Models import vgg_snp
 import util
 import numpy as np
@@ -185,11 +185,7 @@ def main():
         if not args.full:
             bin_op = util.BinOp(model)
 
-        if args.evaluate:
-            validate(val_loader, model, criterion)
-            return
-
-        for epoch in range(1, epochs):
+        for epoch in range(epochs):
             # train for one epoch
             train(train_loader, model, criterion, optimizer, epoch, i)
             scheduler.step()
