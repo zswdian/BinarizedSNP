@@ -38,6 +38,8 @@ parser.add_argument('--resume', default='', type=str, metavar='PATH',
                     help='path to latest checkpoint (default: none)')
 parser.add_argument('--pretrained', dest='pretrained', action='store_true',
                     default=False, help='use pre-trained model')
+parser.add_argument('--print-freq', '-p', default=10, type=int,
+                    metavar='N', help='print frequency (default: 10)')
 parser.add_argument('--full', action='store_true',
                     help='use full-precision')
 parser.add_argument('--snp', action='store_true',
