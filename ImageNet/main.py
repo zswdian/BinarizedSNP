@@ -126,7 +126,7 @@ def main():
                     model = snp_binary.net(pretrained=args.pretrained)
             else:
                 if not args.snp:
-                    model = resnet.ResNet18()
+                    model = resnet.resnet18()
                 else:
                     model = resnet_snp.ResNet18()
         elif args.vgg:
@@ -137,7 +137,7 @@ def main():
                     model = snp_binary.net(pretrained=args.pretrained)
             else:
                 if not args.snp:
-                    model = vgg.VGG('VGG11')
+                    model = vgg.vgg11()
                 else:
                     model = vgg_snp.VGG('VGG11')
 
