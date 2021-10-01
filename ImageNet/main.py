@@ -12,13 +12,15 @@ import torch.distributed as dist
 import torch.optim as optim
 import torch.utils.data
 import torch.utils.data.distributed
-# import torchvision.transforms as transforms
-# import torchvision.datasets as datasets
 import IMAGENET_Data
 from Models import alexnet
 from Models import net_binary
 from Models import alexnet_snp
 from Models import snp_binary
+from Models import resnet
+from Models import resnet_snp
+from MOdels import vgg
+from Models import vgg_snp
 import util
 import numpy as np
 
@@ -34,36 +36,14 @@ import sys
 import gc
 
 parser = argparse.ArgumentParser(description='PyTorch ImageNet Training')
-parser.add_argument('--arch', '-a', metavar='ARCH', default='alexnet',
-                    help='model architecture (default: alexnet)')
-parser.add_argument('-j', '--workers', default=8, type=int, metavar='N',
-                    help='number of data loading workers (default: 8)')
 parser.add_argument('--epochs', default=100, type=int, metavar='N',
                     help='number of total epochs to run')
-parser.add_argument('--start-epoch', default=0, type=int, metavar='N',
-                    help='manual epoch number (useful on restarts)')
-parser.add_argument('-b', '--batch-size', default=256, type=int,
-                    metavar='N', help='mini-batch size (default: 256)')
 parser.add_argument('--lr', '--learning-rate', default=0.001, type=float,
                     metavar='LR', help='initial learning rate')
-parser.add_argument('--momentum', default=0.90, type=float, metavar='M',
-                    help='momentum')
-parser.add_argument('--weight-decay', '--wd', default=1e-5, type=float,
-                    metavar='W', help='weight decay (default: 1e-5)')
-parser.add_argument('--print-freq', '-p', default=10, type=int,
-                    metavar='N', help='print frequency (default: 10)')
 parser.add_argument('--resume', default='', type=str, metavar='PATH',
                     help='path to latest checkpoint (default: none)')
-parser.add_argument('-e', '--evaluate', dest='evaluate', action='store_true',
-                    help='evaluate model on validation set')
 parser.add_argument('--pretrained', dest='pretrained', action='store_true',
                     default=False, help='use pre-trained model')
-parser.add_argument('--world-size', default=1, type=int,
-                    help='number of distributed processes')
-parser.add_argument('--dist-url', default='', type=str,
-                    help='url used to set up distributed training')
-parser.add_argument('--dist-backend', default='gloo', type=str,
-                    help='distributed backend')
 parser.add_argument('--full', action='store_true',
                     help='use full-precision')
 parser.add_argument('--snp', action='store_true',
@@ -72,6 +52,10 @@ parser.add_argument('--expt_num', action='store', default=10,
                     help='the num of the experiment')
 parser.add_argument('--alexnet', action='store_true',
                     help='use alexnet')
+parser.add_argument('--resnet', action='store_true',
+                    help='use resnet')
+parser.add_argument('--vgg', action='store_true',
+                    help='use vgg')
 global bin_op
 
 
@@ -85,28 +69,49 @@ def main():
     acc_list = []
     acc_list_5 = []
 
-    if args.full:
-        if not args.snp:
-            type = 'alexnet'
+    if args.alexnet:
+        if args.full:
+            if not args.snp:
+                type = 'alexnet'
+            else:
+                type = 'alexnet_snp'
         else:
-            type = 'alexnet_snp'
-    else:
-        if not args.snp:
-            type = 'alexnet_bin'
+            if not args.snp:
+                type = 'alexnet_bin'
+            else:
+                type = 'alexnet_snp_bin'
+    elif args.resnet:
+        if args.full:
+            if not args.snp:
+                type = 'resnet'
+            else:
+                type = 'resnet_snp'
         else:
-            type = 'alexnet_snp_bin'
+            if not args.snp:
+                type = 'resnet_bin'
+            else:
+                type = 'resnet_snp_bin'
+    elif args.vgg:
+        if args.full:
+            if not args.snp:
+                type = 'vgg'
+            else:
+                type = 'vgg_snp'
+        else:
+            if not args.snp:
+                type = 'vgg_bin'
+            else:
+                type = 'vgg_snp_bin'
 
     filename = 'ExpData/' + type + '.txt'
 
-    torch.distributed.init_process_group(backend="nccl")
-
-    for i in range(1, expt_num):
+    for i in range(expt_num):
 
         best_prec1 = 0
         best_prec5 = 0
 
         # create model
-        if args.arch == 'alexnet':
+        if args.alexnet:
             if not args.full:
                 if not args.snp:
                     model = net_binary.net(pretrained=args.pretrained)
@@ -117,14 +122,31 @@ def main():
                     model = alexnet.net(pretrained=args.pretrained)
                 else:
                     model = alexnet_snp.net(pretrained=args.pretrained)
-        else:
-            raise Exception('Model not supported yet')
+        elif args.resnet:
+            if not args.full:
+                if not args.snp:
+                    model = net_binary.net(pretrained=args.pretrained)
+                else:
+                    model = snp_binary.net(pretrained=args.pretrained)
+            else:
+                if not args.snp:
+                    model = resnet.ResNet18()
+                else:
+                    model = resnet_snp.ResNet18()
+        elif args.vgg:
+            if not args.full:
+                if not args.snp:
+                    model = net_binary.net(pretrained=args.pretrained)
+                else:
+                    model = snp_binary.net(pretrained=args.pretrained)
+            else:
+                if not args.snp:
+                    model = vgg.VGG('VGG11')
+                else:
+                    model = vgg_snp.VGG('VGG11')
 
-        if args.arch.startswith('alexnet') or args.arch.startswith('vgg'):
-            model.cuda()
-            model.features = torch.nn.parallel.DistributedDataParallel()
-        else:
-            model = torch.nn.parallel.DistributedDataParallel(model).cuda()
+        model.cuda()
+        model = torch.nn.DataParallel(model, device_ids=range(torch.cuda.device_count()))
 
         # define loss function (criterion) and optimizer
         optimizer = optim.SGD(model.parameters(), lr=args.lr,
