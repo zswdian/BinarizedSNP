@@ -18,7 +18,6 @@ from Models import resnet_snp
 from Models import vgg
 from Models import vgg_snp
 import util
-import numpy as np
 
 import warnings
 
@@ -28,7 +27,6 @@ warnings.filterwarnings('ignore')
 torch.manual_seed(1)
 torch.cuda.manual_seed(1)
 
-import sys
 import gc
 
 parser = argparse.ArgumentParser(description='PyTorch ImageNet Training')
