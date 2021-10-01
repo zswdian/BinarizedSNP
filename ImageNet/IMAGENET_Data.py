@@ -24,6 +24,6 @@ transform_val = transforms.Compose([
 train_set = datasets.ImageFolder('Data/tiny-imagenet-200/train', transform=transform_train)
 val_set = datasets.ImageFolder('Data/tiny-imagenet-200/val', transform=transform_val)
 train_loader = torch.utils.data.DataLoader(train_set, batch_size=256,
-                                           shuffle=True, num_workers=8, pin_memory=True)
+                                           shuffle=True, num_workers=8, pin_memory=False)
 val_loader = torch.utils.data.DataLoader(val_set, batch_size=256,
-                                         shuffle=False, num_workers=8, pin_memory=True)
+                                         shuffle=False, num_workers=8, pin_memory=False)
