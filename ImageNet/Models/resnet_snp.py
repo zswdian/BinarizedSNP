@@ -77,7 +77,6 @@ class ResNet(nn.Module):
         self.relu = nn.ReLU(inplace=True)
         self.linear = nn.Linear(512*block.expansion, num_classes)
 
-
     def _make_layer(self, block, planes, num_blocks, stride):
         strides = [stride] + [1]*(num_blocks-1)
         layers = []
