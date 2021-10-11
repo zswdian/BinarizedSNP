@@ -89,7 +89,7 @@ class BinSNPConv2d(nn.Module):
     def __init__(self, input_channels, output_channels, kernel_size=1,
                  stride=1, padding=1, dropout=0, groups=1, Linear=False, relu=True):
         super(BinSNPConv2d, self).__init__()
-        self.layer_type = 'BinSNPSConv2d'
+        self.layer_type = 'BinSNPConv2d'
         self.kernel_size = kernel_size
         self.stride = stride
         self.padding = padding
