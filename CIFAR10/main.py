@@ -142,7 +142,7 @@ if __name__ == '__main__':
             if not args.snp:
                 type = 'nin'
             else:
-                type = 'nin_snp_2'
+                type = 'nin_snp'
         else:
             if not args.snp:
                 type = 'nin_bin'
@@ -234,11 +234,11 @@ if __name__ == '__main__':
         model = torch.nn.DataParallel(model, device_ids=range(torch.cuda.device_count()))
 
         # define solver and criterion
-        optimizer = optim.SGD(model.parameters(), lr=args.lr,
-                              momentum=0.9, weight_decay=5e-4)
+        # optimizer = optim.SGD(model.parameters(), lr=args.lr,
+        #                       momentum=0.9, weight_decay=5e-4)
         # BIN
-        # optimizer = optim.Adam(model.parameters(), lr=args.lr,
-        #                        weight_decay=0.00001)
+        optimizer = optim.Adam(model.parameters(), lr=args.lr,
+                               weight_decay=0.00001)
         criterion = nn.CrossEntropyLoss()
         scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=epochs)
 
