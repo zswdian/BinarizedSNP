@@ -9,7 +9,7 @@ import MNIST_Data
 from Models import lenet
 from Models import lenet_bin
 from Models import lenet_snp
-from Models import snp_binary
+from Models import lenet_snp_bin
 import util
 import argparse
 from torch.autograd import Variable
@@ -152,7 +152,7 @@ if __name__ == '__main__':
             if not args.snp:
                 model = lenet_bin.Net()
             else:
-                model = snp_binary.Net()
+                model = lenet_snp_bin.Net()
         else:
             if not args.snp:
                 model = lenet.Net()

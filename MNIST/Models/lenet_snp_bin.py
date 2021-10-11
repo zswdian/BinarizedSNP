@@ -8,7 +8,8 @@ class Net(nn.Module):
         super(Net, self).__init__()
 
         self.features = nn.Sequential(
-            nn.PReLU(),
+            nn.BatchNorm2d(1),
+            nn.ReLU(inplace=True),
             nn.Conv2d(1, 20, kernel_size=5, stride=1),
             nn.MaxPool2d(kernel_size=2, stride=2),
             BinSNPConv2d(20, 50, kernel_size=5, stride=1, padding=0),
@@ -17,6 +18,7 @@ class Net(nn.Module):
 
         self.classifier = nn.Sequential(
             BinSNPConv2d(50 * 4 * 4, 500, Linear=True),
+            nn.ReLU(inplace=True),
             nn.Linear(500, 10),
         )
 

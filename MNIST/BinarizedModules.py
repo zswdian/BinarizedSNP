@@ -84,8 +84,8 @@ class BinSNPConv2d(nn.Module):
         self.prelu = nn.PReLU()
 
     def forward(self, input):
-        x = self.prelu(input)
-        x = self.bn(x)
+        x = self.bn(input)
+        x = self.relu(x)
         x = BinActive()(x)
         if self.dropout_ratio != 0:
             x = self.dropout(x)
