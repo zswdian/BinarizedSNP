@@ -7,7 +7,7 @@ import torch.nn as nn
 import torch.optim as optim
 import MNIST_Data
 from Models import lenet
-from Models import net_binary
+from Models import lenet_bin
 from Models import lenet_snp
 from Models import snp_binary
 import util
@@ -150,7 +150,7 @@ if __name__ == '__main__':
 
         if not args.full:
             if not args.snp:
-                model = net_binary.Net()
+                model = lenet_bin.Net()
             else:
                 model = snp_binary.Net()
         else:
@@ -178,11 +178,11 @@ if __name__ == '__main__':
         model = torch.nn.DataParallel(model, device_ids=range(torch.cuda.device_count()))
 
         # define solver and criterion
-        optimizer = optim.SGD(model.parameters(), lr=args.lr,
-                              momentum=0.9, weight_decay=5e-4)
+        # optimizer = optim.SGD(model.parameters(), lr=args.lr,
+        #                       momentum=0.9, weight_decay=5e-4)
         # BIN
-        # optimizer = optim.Adam(model.parameters(), lr=args.lr,
-        #                        weight_decay=0.00001)
+        optimizer = optim.Adam(model.parameters(), lr=args.lr,
+                               weight_decay=0.00001)
         criterion = nn.CrossEntropyLoss()
         scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=epochs)
 
