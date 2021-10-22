@@ -16,6 +16,8 @@ from Models import resnet_snp
 from Models import resnet_snp_bin
 from Models import vgg
 from Models import vgg_snp
+from Models import vgg_bin
+from Models import vgg_snp_bin
 import util
 import argparse
 from torch.autograd import Variable
@@ -206,9 +208,9 @@ if __name__ == '__main__':
         elif args.vgg:
             if not args.full:
                 if not args.snp:
-                    model = resnet_bin.ResNet18()
+                    model = vgg_bin.VGG('VGG11')
                 else:
-                    model = resnet_snp_bin.ResNet18()
+                    model = vgg_snp_bin.VGG("VGG11")
             else:
                 if not args.snp:
                     model = vgg.VGG('VGG11')
