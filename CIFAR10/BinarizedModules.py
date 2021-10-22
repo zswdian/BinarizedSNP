@@ -59,7 +59,7 @@ class BinConv2d(nn.Module):
 class BinResNetConv2d(nn.Module):
 
     def __init__(self, input_channels, output_channels, kernel_size=1,
-                 stride=1, padding=1, groups=1, bias=False, relu=True):
+                 stride=1, padding=1, groups=1, bias=False, is_relu=True):
         super(BinResNetConv2d, self).__init__()
         self.layer_type = 'BinResNetConv2d'
         self.kernel_size = kernel_size
@@ -67,7 +67,7 @@ class BinResNetConv2d(nn.Module):
         self.padding = padding
         self.groups = groups
         self.bias = bias
-        self.relu = relu
+        self.is_relu = is_relu
 
         self.bn = nn.BatchNorm2d(output_channels)
         self.bn.weight.data = self.bn.weight.data.zero_().add(1.0)
@@ -76,10 +76,10 @@ class BinResNetConv2d(nn.Module):
         self.relu = nn.ReLU()
 
     def forward(self, input):
-        x = BinActive()(input)
+        x = self.bn(input)
+        x = BinActive()(x)
         x = self.conv(x)
-        x = self.bn(x)
-        if self.relu:
+        if self.is_relu:
             x = self.relu(x)
         return x
 
@@ -87,7 +87,7 @@ class BinResNetConv2d(nn.Module):
 class BinSNPConv2d(nn.Module):
 
     def __init__(self, input_channels, output_channels, kernel_size=1,
-                 stride=1, padding=1, dropout=0, groups=1, Linear=False, relu=True):
+                 stride=1, padding=1, dropout=0, groups=1, Linear=False):
         super(BinSNPConv2d, self).__init__()
         self.layer_type = 'BinSNPConv2d'
         self.kernel_size = kernel_size
@@ -129,7 +129,7 @@ class BinResNetSNPConv2d(nn.Module):
     def __init__(self, input_channels, output_channels, kernel_size=1,
                  stride=1, padding=1, groups=1, bias=False):
         super(BinResNetSNPConv2d, self).__init__()
-        self.layer_type = 'BinSNPSConv2d'
+        self.layer_type = 'BinSNPConv2d'
         self.kernel_size = kernel_size
         self.stride = stride
         self.padding = padding
@@ -141,10 +141,10 @@ class BinResNetSNPConv2d(nn.Module):
         self.conv = nn.Conv2d(input_channels, output_channels, kernel_size=kernel_size,
                               stride=stride, padding=padding, groups=groups, bias=bias)
 
-        self.pRelu = nn.PReLU()
+        self.relu = nn.ReLU()
 
     def forward(self, input):
-        x = self.pRelu(input)
+        x = self.relu(input)
         x = self.bn(x)
         x = BinActive()(x)
         x = self.conv(x)
