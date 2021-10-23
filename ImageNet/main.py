@@ -10,9 +10,9 @@ import torch.optim as optim
 import torch.utils.data
 import IMAGENET_Data
 from Models import alexnet
-from Models import net_binary
+from Models import alexnet_bin
 from Models import alexnet_snp
-from Models import snp_binary
+from Models import alexnet_snp_bin
 from Models import resnet
 from Models import resnet_snp
 from Models import vgg
@@ -110,9 +110,9 @@ def main():
         if args.alexnet:
             if not args.full:
                 if not args.snp:
-                    model = net_binary.net(pretrained=args.pretrained)
+                    model = alexnet_bin.net(pretrained=args.pretrained)
                 else:
-                    model = snp_binary.net(pretrained=args.pretrained)
+                    model = alexnet_snp_bin.net(pretrained=args.pretrained)
             else:
                 if not args.snp:
                     model = alexnet.net(pretrained=args.pretrained)
@@ -121,9 +121,9 @@ def main():
         elif args.resnet:
             if not args.full:
                 if not args.snp:
-                    model = net_binary.net(pretrained=args.pretrained)
+                    model = alexnet_bin.net(pretrained=args.pretrained)
                 else:
-                    model = snp_binary.net(pretrained=args.pretrained)
+                    model = alexnet_snp_bin.net(pretrained=args.pretrained)
             else:
                 if not args.snp:
                     model = resnet.resnet18()
@@ -132,9 +132,9 @@ def main():
         elif args.vgg:
             if not args.full:
                 if not args.snp:
-                    model = net_binary.net(pretrained=args.pretrained)
+                    model = alexnet_bin.net(pretrained=args.pretrained)
                 else:
-                    model = snp_binary.net(pretrained=args.pretrained)
+                    model = alexnet_snp_bin.net(pretrained=args.pretrained)
             else:
                 if not args.snp:
                     model = vgg.vgg11()
@@ -145,11 +145,11 @@ def main():
         model = torch.nn.DataParallel(model, device_ids=range(torch.cuda.device_count()))
 
         # define loss function (criterion) and optimizer
-        optimizer = optim.SGD(model.parameters(), lr=args.lr,
-                              momentum=0.9, weight_decay=5e-4)
+        # optimizer = optim.SGD(model.parameters(), lr=args.lr,
+        #                       momentum=0.9, weight_decay=5e-4)
         # BIN
-        # optimizer = optim.Adam(model.parameters(), lr=args.lr,
-        #                        weight_decay=0.00001)
+        optimizer = optim.Adam(model.parameters(), lr=args.lr,
+                               weight_decay=0.00001)
         criterion = nn.CrossEntropyLoss()
         scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=epochs)
 
