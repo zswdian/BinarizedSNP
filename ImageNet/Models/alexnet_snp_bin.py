@@ -21,8 +21,8 @@ class Net(nn.Module):
         )
 
         self.classifier = nn.Sequential(
-            BinSNPConv2d(256 * 6 * 6, 4096, dropout=0.5, Liner=True),
-            BinSNPConv2d(4096, 4096, dropout=0.5, Liner=True),
+            BinSNPConv2d(256 * 6 * 6, 4096, dropout=0.5, Linear=True),
+            BinSNPConv2d(4096, 4096, dropout=0.5, Linear=True),
             nn.ReLU(inplace=True),
             nn.Linear(4096, 1000),
         )

@@ -23,8 +23,8 @@ class Net(nn.Module):
         )
 
         self.classifier = nn.Sequential(
-            BinConv2d(256 * 6 * 6, 4096, dropout=0.5, Liner=True),
-            BinConv2d(4096, 4096, dropout=0.5, Liner=True),
+            BinConv2d(256 * 6 * 6, 4096, dropout=0.5, Linear=True),
+            BinConv2d(4096, 4096, dropout=0.5, Linear=True),
 
             nn.Linear(4096, 1000),
         )
