@@ -52,8 +52,6 @@ parser.add_argument('--resnet', action='store_true',
                     help='use resnet')
 parser.add_argument('--vgg', action='store_true',
                     help='use vgg')
-global bin_op
-
 
 def main():
     global args, best_prec1
@@ -182,6 +180,7 @@ def main():
         # print(model)
 
         # define the binarization operator
+        global bin_op
         if not args.full:
             bin_op = util.BinOp(model)
 
