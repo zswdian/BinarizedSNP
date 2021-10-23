@@ -57,6 +57,7 @@ def main():
     global args, best_prec1
     global type
     args = parser.parse_args()
+    print('==> Options:', args)
 
     epochs = int(args.epochs)
     expt_num = int(args.expt_num)
