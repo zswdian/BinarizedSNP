@@ -18,7 +18,7 @@ from Models import resnet_snp
 from Models import vgg
 from Models import vgg_snp
 import util
-
+import numpy as np
 import warnings
 
 warnings.filterwarnings('ignore')
@@ -211,10 +211,10 @@ def main():
         acc_list_5.append(best_prec5)
 
     with open(filename, 'a') as f:
-        f.write('Mean@1: {}\n'.format(torch.mean(acc_list)))
-        f.write('Var@1: {}'.format(torch.var(acc_list)))
-        f.write('Mean@5: {}\n'.format(torch.mean(acc_list_5)))
-        f.write('Var@5: {}'.format(torch.var(acc_list_5)))
+        f.write('Mean@1: {}\n'.format(np.mean(acc_list)))
+        f.write('Var@1: {}'.format(np.var(acc_list)))
+        f.write('Mean@5: {}\n'.format(np.mean(acc_list_5)))
+        f.write('Var@5: {}'.format(np.var(acc_list_5)))
 
 
 def train(train_loader, model, criterion, optimizer, epoch, expt_no):
