@@ -69,7 +69,7 @@ class ResNet(nn.Module):
         self.layer4 = self._make_layer(block, 512, num_blocks[3], stride=2)
         self.bn1 = nn.BatchNorm2d(512)
         self.linear = nn.Linear(512*block.expansion, num_classes)
-        self.prelu = nn.PReLU()
+        self.relu = nn.ReLU()
 
     def _make_layer(self, block, planes, num_blocks, stride):
         strides = [stride] + [1]*(num_blocks-1)
@@ -86,7 +86,7 @@ class ResNet(nn.Module):
         out = self.layer3(out)
         out = self.layer4(out)
         out = self.bn1(out)
-        out = self.prelu(out)
+        out = self.relu(out)
         out = F.avg_pool2d(out, 4)
         out = out.view(out.size(0), -1)
         out = self.linear(out)

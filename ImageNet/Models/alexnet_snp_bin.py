@@ -9,6 +9,7 @@ class Net(nn.Module):
 
         self.features = nn.Sequential(
             nn.Conv2d(3, 96, kernel_size=11, stride=4, padding=0),
+            nn.BatchNorm2d(96, eps=1e-4, momentum=0.1, affine=True),
             nn.MaxPool2d(kernel_size=3, stride=2),
 
             BinSNPConv2d(96, 256, kernel_size=5, stride=1, padding=2, groups=1),
